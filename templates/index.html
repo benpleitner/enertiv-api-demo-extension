@@ -1,0 +1,39 @@
+<html>
+	<head>
+		<script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
+		<link href='http://fonts.googleapis.com/css?family=Actor' rel='stylesheet' type='text/css'>
+		<!-- <link type="text/javascript" rel="javascript" href="{{ url_for('static', filename='/js/d3.v3.min.js') }}"> -->
+		<link type="text/javascript" rel="javascript" href="{{ url_for('static', filename='/js/moment.js') }}">
+		<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+		<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/basic.css') }}">
+	</head>
+	<body>
+	<!-- <script type="text/javascript" scr="/static/js/demo.js"></script> -->
+		<nav class="navbar navbar-default">
+		  <div class="container-fluid">
+		    <!-- Brand and toggle get grouped for better mobile display -->
+		    <div class="navbar-header">
+				<a class="navbar-brand" href="/">
+ 					<img src='/static/img/enertiv-logo.png' width='76' height='24'/>
+ 				</a>
+		    </div>
+		    <!-- Collect the nav links, forms, and other content for toggling -->
+		    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+		      <ul class="nav navbar-nav">
+		      </ul>
+		    </div><!-- /.navbar-collapse -->
+		  </div><!-- /.container-fluid -->
+		</nav>
+		<div class="container">
+			<div class="well" id="graph">
+				<form>
+				  <label><input type="radio" name="mode" value="size"> Size</label>
+				  <label><input type="radio" name="mode" value="count" checked> Count</label>
+				</form>
+				Its a graph
+			</div>
+			<script type="text/javascript" src="{{ url_for('static', filename='js/demo.js') }}"></script>
+		  <!-- <script type="text/javascript">d3.json("/client", function (data) {console.log(data);});</script> -->
+	  </div>
+	</body>
+</html>
