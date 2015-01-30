@@ -1,11 +1,12 @@
 <html>
 	<head>
 		<script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/d3-tip.min.js') }}"></script>
+    <!-- <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script> -->
 		<link href='http://fonts.googleapis.com/css?family=Actor' rel='stylesheet' type='text/css'>
 		<!-- <link type="text/javascript" rel="javascript" href="{{ url_for('static', filename='/js/d3.v3.min.js') }}"> -->
-		<link type="text/javascript" rel="javascript" href="{{ url_for('static', filename='/js/moment.js') }}">
-	 	<script src="http://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.0-rc2/js/bootstrap.min.js"></script>
+		<!-- <link type="text/javascript" rel="javascript" href="{{ url_for('static', filename='/js/moment.js') }}"> -->
+	 	<!-- <script src="http://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.0-rc2/js/bootstrap.min.js"></script> -->
 		<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
 		<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/basic.css') }}">
 	</head>
@@ -27,7 +28,7 @@
 		</nav>
 		<div class="container">
 			<div class="well center" >
-				<div><h2>Single Day Usage of the Demo Office </h2></div>
+				<div><h2>Single Day Usage for the Enertiv the Demo Office </h2></div>
 					<div id="graph">
 
 		<!-- 				<form>
@@ -39,10 +40,10 @@
 							<p>Click on a partition to zoom in and click the center to go back a level.</p>
 						</div>
 					</div>
-					<div class="left"><a href="/">A Random A</a> random</div>
-					<div id="myDiv">
+					<!-- <div class="left"><a href="/">A Random A</a> random</div> -->
+<!-- 					<div id="myDiv">
 						<button class="btn btn-large btn-danger" data-toggle="tooltip" data-placement="top" title="" data-original-title="Tooltip on top">Tooltip on top</button>    
-					</div>
+					</div> -->
 				</div>
 			<script type="text/javascript" data-toggle="tooltip" title="hats" src="{{ url_for('static', filename='js/demo.js') }}"></script>
 	  </div>

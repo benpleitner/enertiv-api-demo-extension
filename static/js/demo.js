@@ -29,11 +29,20 @@ function colour(d) {
   return d.colour || "#fff";
 }
 
+var tip = d3.tip()
+  .attr('class', 'd3-tip fade')
+  // .attr('class', "fade")
+  .html(function(d) {
+    return "<p>" + d.name + "<p><p><span style='font-size: 20px;'>" + (Math.round(1000 * d.size) / 1000) + "</span> kWh<p>";
+  })
+
 var svg = d3.select("#graph").append("svg")
     .attr("width", width)
     .attr("height", height)
   .append("g")
     .attr("transform", "translate(" + width / 2 + "," + (height / 2 + 10) + ")");
+
+svg.call(tip);
 
 var partition = d3.layout.partition()
     .sort(null)
@@ -85,14 +94,15 @@ function build_tree_i(tree_i, sub_name, equip_type, equip_name){
 }
 
 function nested (tree, data, level, suffix, id) {
-	level_name = levels_obj[level]
-	target = data[level_name]
-	data_index = in_level(tree, target)
+	var level_name = levels_obj[level],
+			target = data[level_name],
+			data_index = in_level(tree, target),
+			total = data["total"];
 	// console.log(id);
 	if (data_index === null) {
 		append = level == 3 
 						 ? {name: data[level_name] + " " + suffix, size: data["total"], equipment_id: data["equipment_id"]} 
-						 : {name: data[level_name], children: []}
+						 : {name: data[level_name], children: [], size: total}
 		tree.push(append);
 		// console.log("i",tree,target)
 		// console.log("in_level",in_level(tree, target));
@@ -104,6 +114,9 @@ function nested (tree, data, level, suffix, id) {
 	else {
 		// console.log("nah")
 		if (in_level(tree, target) !== null && Object.keys(tree[in_level(tree, target)]).indexOf("children") >= 0) {
+			// console.log(data["total"]);
+			// console.log(tree[in_level(tree, target)]);
+			tree[in_level(tree, target)]["size"] += total;
 			nested(tree[in_level(tree, target)]["children"], data, level + 1, suffix, id);
 		}
 	}
@@ -111,7 +124,8 @@ function nested (tree, data, level, suffix, id) {
 
 function combine_tree (reading_data) {
 	var tree = [],
-			tree_i = {};
+			tree_i = {},
+			total_usage = 0;
 	for (var index in reading_data) {
 		// console.log(index, "hats");
 		var row = reading_data[index],
@@ -120,24 +134,25 @@ function combine_tree (reading_data) {
 				equip_name = row.name,
 				total = row.total, 
 		build_tree_i(tree_i, sub_name, equip_type, equip_name);
+		total_usage += total;
 		suffix = String(tree_i[sub_name][equip_type][equip_name])
 		// console.log(suffix)
 		nested(tree, row, 1, suffix, index)
 	}
-	return {name: client_name, children: [{name: location_name, children: tree}]}
+	return {name: client_name, size: total_usage, children: [{name: location_name, children: tree, size: total_usage}]}
 }
 
-var client_info = {};
-d3.json("/client", function (json) {
-	// console.log("Client Information")
-	// console.log(json);   										// client information
-})
+// var client_info = {};
+// d3.json("/client", function (json) {
+// 	console.log("Client Information")
+// 	console.log(json);   										// client information
+// })
 
-var location_info = {};
-d3.json("/client/location?uuid=15b87da5-5465-476f-b211-397b0280b609", function (data) {
-	// console.log("Location Information")  
-	// console.log(data);												// location information
-});
+// var location_info = {};
+// d3.json("/client/location?uuid=15b87da5-5465-476f-b211-397b0280b609", function (data) {
+// 	console.log("Location Information")  
+// 	console.log(data);												// location information
+// });
 
 
 d3.json(deagg_uri, function (error,json) {
@@ -173,13 +188,15 @@ d3.json(deagg_uri, function (error,json) {
             rotate = angle + (multiline ? -.5 : 0);
         return "rotate(" + rotate + ")translate(" + (y(d.y) + padding) + ")rotate(" + (angle > 90 ? -180 : 0) + ")";
       })
-      // .on("hover", te)
-      .on("click", textClick)
-      .attr("data-toggle","tooltip")
-      .attr("data-placement", "top")
-      .attr("data-original-title", "Lies!!!")
-      .attr("title", "Lies!!!")
-      // data-placement="top" title="" data-original-title="Tooltip on top"
+      .on('mouseover', tip.show)
+      .on('mouseout', tip.hide)
+      // // .on("hover", te)
+      // .on("click", textClick)
+      // .attr("data-toggle","tooltip")
+      // .attr("data-placement", "top")
+      // .attr("data-original-title", "Lies!!!")
+      // .attr("title", "Lies!!!")
+      // // data-placement="top" title="" data-original-title="Tooltip on top"
       ;
 
   text.append("tspan")
@@ -195,6 +212,33 @@ d3.json(deagg_uri, function (error,json) {
       // .on("click", click)
       // .each(stash)
       ;
+
+  // var text = svg.selectAll("text")
+  //     .data(partition.nodes)
+  //     .enter().append("text")
+  //     .style("fill-opacity", 1)
+  //     .style("fill", function(d) {
+  //       return brightness(d3.rgb(colour(d))) < 125 ? "#eee" : "#555";
+  //     })
+  //     .attr("text-anchor", function(d) {
+  //       return x(d.x + d.dx / 2) > Math.PI ? "end" : "start";
+  //     })
+  //     .attr("dy", ".2em")
+  //     .attr("transform", function(d) {
+  //       var multiline = (d.name || "").split(" ").length > 1,
+  //           angle = x(d.x + d.dx / 2) * 180 / Math.PI - 90,
+  //           rotate = angle + (multiline ? -.5 : 0);
+  //       return "rotate(" + rotate + ")translate(" + (y(d.y) + padding) + ")rotate(" + (angle > 90 ? -180 : 0) + ")";
+  //     })
+  //     // .on("hover", te)
+  //     .on("click", textClick)
+  //     .attr("data-toggle","tooltip")
+  //     .attr("data-placement", "top")
+  //     .attr("data-original-title", "Lies!!!")
+  //     .attr("title", "Lies!!!")
+  //     // data-placement="top" title="" data-original-title="Tooltip on top"
+  //     ;
+
 
   d3.selectAll("input").on("change", function change() {
     var value = this.value === "count"
@@ -309,20 +353,3 @@ function arcTweenZoom(d) {
 function brightness(rgb) {
   return rgb.r * .299 + rgb.g * .587 + rgb.b * .114;
 }
-
-// $("text").each(function () {
-//     $(this).tooltip({
-//         'container': 'body',
-//     });
-// });
-
-$(".text").tooltip({
-    'container': 'body',
-    'placement': 'bottom'
-}); // this works!
-
-$(function () { 
-  $("[data-toggle='tooltip']").tooltip();
-  console.log("cats");
-});
-// $("text").tooltip()
