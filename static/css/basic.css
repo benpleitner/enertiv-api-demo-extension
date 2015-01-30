@@ -23,13 +23,14 @@ nav.navbar {
 }
 
 text {
-  cursor: pointer;
-  font-size: 14px;
+  font-size: 12px;
+  cursor: none;
 }
 
 path {
   stroke: #fff;
   stroke-width: 1px;
+  cursor: pointer;
 }
 
 .well {
@@ -59,8 +60,16 @@ border-radius: 25px 10px / 10px 25px;
   -moz-box-shadow: 0 0 5px #888;
   -webkit-box-shadow: 0 0 5px#888;
   box-shadow: 0 0 5px #888;
-  -moz-border-radius: 25px 10px / 10px 25px;
-  border-radius: 25px 10px / 10px 25px;
+  -moz-border-radius: 10px 10px / 10px 10px;
+  border-radius: 10px 10px / 10px 10px;
+}
+
+.light{
+  font-weight: 200;
+}
+
+.big {
+  font-size: 24px; 
 }
 
 /* Creates a small triangle extender for the tooltip */
