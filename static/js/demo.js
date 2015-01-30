@@ -37,7 +37,10 @@ var svg = d3.select("#graph").append("svg")
 
 var partition = d3.layout.partition()
     .sort(null)
-    .value(function(d) { return 1; });
+    .value(function(d) { 
+    	return d.size; // size default
+    	// return 1;  // count default
+    });
 
 var arc = d3.svg.arc()
     .startAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x))); })
@@ -136,11 +139,6 @@ d3.json("/client/location?uuid=15b87da5-5465-476f-b211-397b0280b609", function (
 	// console.log(data);												// location information
 });
 
-function childrenSize(data, start){
-	if (data.size){
-		return data.size;
-	}
-}
 
 d3.json(deagg_uri, function (error,json) {
 	// var data = json.data,
@@ -159,8 +157,8 @@ d3.json(deagg_uri, function (error,json) {
       .each(stash);
 
   var text = svg.selectAll("text")
-      .data(partition.nodes);
-  var textEnter = text.enter().append("text")
+      .data(partition.nodes)
+      .enter().append("text")
       .style("fill-opacity", 1)
       .style("fill", function(d) {
         return brightness(d3.rgb(colour(d))) < 125 ? "#eee" : "#555";
@@ -177,11 +175,17 @@ d3.json(deagg_uri, function (error,json) {
       })
       // .on("hover", te)
       .on("click", textClick)
+      .attr("data-toggle","tooltip")
+      .attr("data-placement", "top")
+      .attr("data-original-title", "Lies!!!")
+      .attr("title", "Lies!!!")
+      // data-placement="top" title="" data-original-title="Tooltip on top"
       ;
-  textEnter.append("tspan")
+
+  text.append("tspan")
       .attr("x", 0)
       .text(function(d) { return d.depth ? d.name.split(" ")[0] : ""; });
-  textEnter.append("tspan")
+  text.append("tspan")
       .attr("x", 0)
       .attr("dy", "1em")
       .text(function(d) { return d.depth ? d.name.split(" ")[1] || "" : ""; });
@@ -305,3 +309,20 @@ function arcTweenZoom(d) {
 function brightness(rgb) {
   return rgb.r * .299 + rgb.g * .587 + rgb.b * .114;
 }
+
+// $("text").each(function () {
+//     $(this).tooltip({
+//         'container': 'body',
+//     });
+// });
+
+$(".text").tooltip({
+    'container': 'body',
+    'placement': 'bottom'
+}); // this works!
+
+$(function () { 
+  $("[data-toggle='tooltip']").tooltip();
+  console.log("cats");
+});
+// $("text").tooltip()

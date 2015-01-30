@@ -1,11 +1,3 @@
-/*ft = font-family: 'Actor', sans-serif;*/
-/*@import url("//netdna.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css");*/
-/*@font-face {
-  font-family: 'Glyphicons Halflings';
-  src: url('../fonts/glyphicons-halflings-regular.eot');
-  src: url('../fonts/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'), url('../fonts/glyphicons-halflings-regular.woff') format('woff'), url('../fonts/glyphicons-halflings-regular.ttf') format('truetype'), url('../fonts/glyphicons-halflings-regular.svg#glyphicons-halflingsregular') format('svg');
-}*/
-
 html, body { 
   background: url(../img/blowing_sands.jpeg) no-repeat center center fixed; 
   -webkit-background-size: cover;
@@ -18,34 +10,13 @@ html, body {
 a:link, a:active {
   text-decoration: none;
 }
-/*
-.axis path,
-
-.axis line {
-  fill: none;
-  stroke: black;
-  shape-rendering: crispEdges;
-}
-.node circle {
-  fill: #fff;
-  stroke: steelblue;
-  stroke-width: 1.5px;
-}
-*/
-/*
-.node {
-  font: 10px sans-serif;
+.center {
+  text-align: center;
 }
 
-.link {
-  fill: none;
-  stroke: #ddd;
-  stroke-width: 1.5px;
+.left {
+  text-align: left;
 }
-
-.blank {
-  background-image: ;
-}*/
 
 nav.navbar {
   background: transparent;
@@ -53,6 +24,7 @@ nav.navbar {
 
 text {
   cursor: pointer;
+  font-size: 14px;
 }
 
 path {
@@ -61,6 +33,7 @@ path {
 }
 
 .well {
+  background-color: #fff;
 -moz-border-radius: 25px 10px / 10px 25px;
 border-radius: 25px 10px / 10px 25px;
 }
