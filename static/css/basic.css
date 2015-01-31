@@ -24,7 +24,7 @@ nav.navbar {
 
 text {
   font-size: 12px;
-  cursor: none;
+  cursor: pointer;
 }
 
 path {

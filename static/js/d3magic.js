@@ -5,7 +5,7 @@ d3Magic.generateFromURI = function (uri, client_name, location_name) {
 	    height = 1100,
 	    radius = Math.min(width, height) / 2 - 30
 	    padding = 5,
-	    duration = 1000;
+	    duration = 1250;
 
 	var x = d3.scale.linear()
 	    .range([0, 2 * Math.PI]);
@@ -91,7 +91,8 @@ d3Magic.generateFromURI = function (uri, client_name, location_name) {
 	        return "rotate(" + rotate + ")translate(" + (y(d.y) + padding) + ")rotate(" + (angle > 90 ? -180 : 0) + ")";
 	      })
 	      .on('mouseover', tip.show)
-	      .on('mouseout', tip.hide);
+	      .on('mouseout', tip.hide)
+	      .on("click", click);
 
 	  text.append("tspan")
 	      .attr("x", 0)
@@ -110,19 +111,19 @@ d3Magic.generateFromURI = function (uri, client_name, location_name) {
 	    path
 	        .data(partition.value(value).nodes)
 	      .transition()
-	        .duration(1000)
+	        .duration(duration)
 	        .attrTween("d", arcTweenData);
 	    text
 	        .data(partition.value(value).nodes)
 	      .transition()
-	        .duration(1000)
+	        .duration(duration)
 	        .attrTween("d", arcTweenData);
 	  });
 
 	  function click(d) { // place to put click actions
 	    node = d;
 	    path.transition()
-	      .duration(1000)
+	      .duration(duration)
 	      .attrTween("d", arcTweenZoom(d));
 	        // Somewhat of a hack as we rely on arcTween updating the scales.
 	    text.style("visibility", function(e) {
