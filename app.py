@@ -21,7 +21,7 @@ assets.url = app.static_url_path
 scss = Bundle('stylyn.scss', filters='pyscss', output='all.css')
 assets.register('scss_all', scss)
 
-client = ""
+client = None
 api_url = "api.enertiv.com"
 
 
@@ -31,9 +31,15 @@ def index():
 
 
 @app.route('/client')
-def client():
-    response = client.get("https://" + api_url + "/api/client")
-    return response.text
+def client_info():
+    print "Client\n", client
+    if client is not None:
+        response_raw = client.get("https://" + api_url + "/api/client")
+        response = response_raw.text
+    else:
+        with open("static/data/client.json", "r") as f:
+            response = f.readlines()[0]
+    return response
 
 
 @app.route('/client/<uuid>')
@@ -54,14 +60,17 @@ def location_info():
 
 @app.route('/client/location')
 def client_location():
-    uuid = request.args.get('uuid')
-    url = "https://%s/api/client/%s/location" % (api_url,uuid)
-    # "https://ems.enertiv.com/api/client/" + uuid + "/location/"
-
-    response = client.get(url)
-    print uuid
-    print "/client/location"
-    return response.text
+    if client != None:
+        uuid = request.args.get('uuid')
+        url = "https://%s/api/client/%s/location" % (api_url,uuid)
+        response_raw = client.get(url)
+        response = response_raw.text
+        print uuid
+        print "/client/location"
+    else:
+        with open("static/data/location.json", "r") as f:
+            response = f.readlines()[0]
+    return response
 
 
 @app.route('/location/data')
@@ -73,12 +82,17 @@ def location_data():
        aggregate        Aggregate all data or break out data per equipment {true, false}. By default: true. query
        reading_type     Comma delimited list of reading types. By default {3,8,9}.  query
        data_format      Data format. {default, rickshaw}. If not specified, then default.   query"""
-    location_uuid = request.args.get('location_uuid')
-    q_string = request.args.get('q_string')
-    print "\n/location/data\n\t", q_string
-    url = "https://%s/api/location/%s/data?%s" % (api_url, location_uuid, q_string)
-    response = client.get(url)
-    return response.text
+    if client is not None:
+        location_uuid = request.args.get('location_uuid')
+        q_string = request.args.get('q_string')
+        print "\n/location/data\n\t", q_string
+        url = "https://%s/api/location/%s/data?%s" % (api_url, location_uuid, q_string)
+        response_raw = client.get(url)
+        response = response_raw.text
+    else:
+        with open("static/data/location_data.json", "r") as f:
+            response = f.readlines()[0]
+    return response
 
 
 #this nifty code just makes it so routes will be queried based on what
@@ -91,11 +105,13 @@ def show(page):
         abort(404)
 
 
+
 def main(argv):
     # Updates the global client email
     global client
-    client = EnertivOAuthClient(argv[0],argv[1], "https", api_url, 443, argv[2], argv[3])
-    client.timeout = 600
+    if len(argv) > 3:
+        client = EnertivOAuthClient(argv[0],argv[1], "https", api_url, 443, argv[2], argv[3])
+        client.timeout = 600
     # client.get("https://ems.enertiv.com/api/client")
     # print client.access_token
     # Bind to PORT if defined, otherwise default to 5000.

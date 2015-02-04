@@ -95,3 +95,19 @@ border-radius: 25px 10px / 10px 25px;
   top: 100%;
   left: 0;
 }
+
+nav.navbar {
+  border-width: 0px;
+  background: transparent;
+}
+
+.navbar-default .dropdown-menu {
+  background: #fff;
+}
+
+/*.navbar-default .dropdown-menu li,*/
+.navbar-default .dropdown-menu>li>a,
+.navbar-default .dropdown-menu li:focus {
+  color: #555;  
+  background: #fff;
+}
