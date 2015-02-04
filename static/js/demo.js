@@ -9,7 +9,7 @@ var today = moment(),
 	location_data_obj = {};
 
 function readableDate(dateString){
-	return moment(dateString).format('MMMM Do YYYY, h:mm:ss a')
+	return moment(dateString).format('MMMM Do YYYY')
 }
 
 function generateURI(location_uuid){
