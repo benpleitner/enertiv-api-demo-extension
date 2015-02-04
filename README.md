@@ -3,6 +3,12 @@
 Working example for using the Enertiv API.
 
 ## Getting Started
+
+The Enertiv API Demo is written in Python for the web server and Javascript for the example. For more info on installing Python `https://www.python.org/downloads/`.  Additionally, Python packages are managed with pip, more info can be found here: `http://pip.readthedocs.org/en/latest/installing.html` 
+
+
+## Installation
+
 `bash`
 
     # If not already present install virtualenv and virtualenvwrapper to your system
