@@ -1,5 +1,7 @@
-var toTime = "2015-01-02 05:00:00.000Z",
-	fromTime = "2015-01-01 05:00:00.000Z",
+var today = moment(),
+	yesterday = today - 24*60*60*1000,
+	fromTime = moment(yesterday).format('YYYY-MM-DD 05:00:00') + "Z",
+	toTime = moment(today).format('YYYY-MM-DD 05:00:00') + "Z",
 	interval = "15min",
 	// declare in the global scope to follow it around
 	client_name = "",
