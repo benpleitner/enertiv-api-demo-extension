@@ -10,9 +10,6 @@ The Enertiv API Demo is written in Python for the web server and JavaScript for 
 ## Getting Started
 Run the code to the right of the `$` in your terminal or command prompt.  The (api_demo) indicates that your command prompt is in the api_demo virtual environment.
 
-### Enertiv API Registration
-To get your credentials for the Enertiv API and see live data: `http://bit.ly/1LMKTlm`
-
 `bash`
 
     $ git clone git@bitbucket.org:enertiv/enertiv_api_demo.git
@@ -36,6 +33,9 @@ To get your credentials for the Enertiv API and see live data: `http://bit.ly/1L
 
     # With Enertiv Credentials
     (api_demo)$ python app.py SERVER_NAME SERVER_PASSWORD CLIENT_ID CLIENT_SECRET
+
+### Enertiv API Registration
+To get your credentials for the Enertiv API and see live data: `http://bit.ly/1LMKTlm`
 
 ## Inspiration
 
