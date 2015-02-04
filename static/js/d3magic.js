@@ -1,8 +1,13 @@
 var d3Magic = d3Magic || {};
 
+
+// Keep track of the node that is currently being displayed as the root.
+d3Magic.node;
+
 d3Magic.generateFromURI = function (uri, client_name, location_name) {
-	var width = 1100,
-	    height = 1100,
+	var innerWidth = d3.min([1100, window.innerWidth * 0.8]),
+		width = innerWidth
+	    height = innerWidth,
 	    radius = Math.min(width, height) / 2 - 30
 	    padding = 5,
 	    duration = 1250;
@@ -37,7 +42,19 @@ d3Magic.generateFromURI = function (uri, client_name, location_name) {
 	    return "<p class='light'>" + d.name + "</p><p class='light'><span class='big''>" + d.size.toFixed(1)  + "</span> kWh<p>";
 	  })
 
-	var svg = d3.select("#graph").append("svg")
+	// function top (data) {
+	// 	if (data.parent !== undefined) {
+	// 		return top(data.parent)
+	// 	} else {
+	// 		return data.size
+	// 	}
+	// }
+
+	d3.select("#sunburst").remove();
+
+	var svg = d3.select("#graph").append("div")
+		.attr("id", "sunburst")
+	.append("svg")
 	    .attr("width", width)
 	    .attr("height", height)
 	  .append("g")
@@ -58,97 +75,107 @@ d3Magic.generateFromURI = function (uri, client_name, location_name) {
 	    .innerRadius(function(d) { return Math.max(0, y(d.y)); })
 	    .outerRadius(function(d) { return Math.max(0, y(d.y + d.dy)); });
 
-	// Keep track of the node that is currently being displayed as the root.
-	var node;
-
+	var start = moment();
+	console.log("fetching")
 	d3.json(uri, function (error,json) {
+		console.log("back " + (moment() - start) + " ms")
 		root = basicTree.combine_tree(json, client_name, location_name); // transform into tree format
-	  node = root;
-	  var path = svg.datum(root).selectAll("path")
-	      .data(partition.nodes)
-	    .enter().append("path")
-	      .attr("d", arc)
-	      .attr("fill-opacity", function (d){return 1 - d.depth / 7; })
-	      .style("fill", function(d) {return color((d.children ? d : d.parent).name); })
-	      .on("click", click)
-	      .each(stash);
+		d3Magic.node = root;
+		var path = svg.datum(root).selectAll("path")
+		    .data(partition.nodes)
+		  .enter().append("path")
+		    .attr("d", arc)
+		    .attr("fill-opacity", function (d) {return 1 - d.depth / 7; })
+		    .style("fill", function(d) {return color((d.children ? d : d.parent).name); })
+		    .on("click", click)
+		    .each(stash);
 
-	  var text = svg.selectAll("text")
-	      .data(partition.nodes)
-	      .enter().append("text")
-	      .style("fill-opacity", 1)
-	      .style("fill", function(d) {
-	        return brightness(d3.rgb(colour(d))) < 125 ? "#eee" : "#555";
-	      })
-	      .attr("text-anchor", function(d) {
-	        return x(d.x + d.dx / 2) > Math.PI ? "end" : "start";
-	      })
-	      .attr("dy", ".2em")
-	      .attr("transform", function(d) {
-	        var multiline = (d.name || "").split(" ").length > 1,
-	            angle = x(d.x + d.dx / 2) * 180 / Math.PI - 90,
-	            rotate = angle + (multiline ? -.5 : 0);
-	        return "rotate(" + rotate + ")translate(" + (y(d.y) + padding) + ")rotate(" + (angle > 90 ? -180 : 0) + ")";
-	      })
-	      .on('mouseover', tip.show)
-	      .on('mouseout', tip.hide)
-	      .on("click", click);
+		var text = svg.selectAll("text")
+		    .data(partition.nodes)
+		    .enter().append("text")
+		    .style("fill-opacity", function (d){
+		    	return d.size / d3Magic.node.size <= 0.015 ? 0 : 1;
+		    })
+		
+			.style("fill", function(d) {
+				return brightness(d3.rgb(colour(d))) < 125 ? "#eee" : "#555";
+			})
+			.attr("text-anchor", function(d) {
+				return x(d.x + d.dx / 2) > Math.PI ? "end" : "start";
+			})
+			.attr("dy", ".2em")
+			.attr("transform", function(d) {
+				var multiline = (d.name || "").split(" ").length > 1,
+				    angle = x(d.x + d.dx / 2) * 180 / Math.PI - 90,
+				    rotate = angle + (multiline ? -.5 : 0);
+				return "rotate(" + rotate + ")translate(" + (y(d.y) + padding) + ")rotate(" + (angle > 90 ? -180 : 0) + ")";
+			})
+			.on('mouseover', tip.show)
+			.on('mouseout', tip.hide)
+			.on("click", click);
 
-	  text.append("tspan")
-	      .attr("x", 0)
-	      .text(function(d) { return d.depth ? d.name.split(" ")[0] : ""; });
-	  text.append("tspan")
-	      .attr("x", 0)
-	      .attr("dy", "1em")
-	      .text(function(d) { return d.depth ? d.name.split(" ")[1] || "" : ""; });
-	      ;
+		text.append("tspan")
+		    .attr("x", 0)
+		    .text(function(d) { return d.depth ? d.name.split(" ")[0] : ""; });
+		text.append("tspan")
+		    .attr("x", 0)
+		    .attr("dy", "2em")
+		    .text(function(d) { return d.depth ? d.name.split(" ")[1] || "" : ""; });
+		text.append("tspan")
+		    .attr("x", 0)
+		    .attr("dy", "2em")
+		    .text(function(d) { return d.depth ? d.name.split(" ")[2] || "" : ""; });
+		    ;
 
-	  d3.selectAll("input").on("change", function change() {
-	    var value = this.value === "count"
-	        ? function() { return 1; }
-	        : function(d) { return d.size; };
+		d3.selectAll("input").on("change", function change() {
+		  var value = this.value === "count" ? function() { return 1; } : function(d) { return d.size; };
 
-	    path
-	        .data(partition.value(value).nodes)
-	      .transition()
-	        .duration(duration)
-	        .attrTween("d", arcTweenData);
-	    text
-	        .data(partition.value(value).nodes)
-	      .transition()
-	        .duration(duration)
-	        .attrTween("d", arcTweenData);
-	  });
+		  path
+		      .data(partition.value(value).nodes)
+		    .transition()
+		      .duration(duration)
+		      .attrTween("d", arcTweenData);
+		  text
+		      .data(partition.value(value).nodes)
+		    .transition()
+		      .duration(duration)
+		      .attrTween("d", arcTweenData);
+		});
 
-	  function click(d) { // place to put click actions
-	    node = d;
-	    path.transition()
-	      .duration(duration)
-	      .attrTween("d", arcTweenZoom(d));
-	        // Somewhat of a hack as we rely on arcTween updating the scales.
-	    text.style("visibility", function(e) {
-	          return isParentOf(d, e) ? null : d3.select(this).style("visibility");
-	        })
-	      .transition()
-	        .duration(duration)
-	        .attrTween("text-anchor", function(d) {
-	          return function() {
-	            return x(d.x + d.dx / 2) > Math.PI ? "end" : "start";
-	          };
-	        })
-	        .attrTween("transform", function(d) {
-	          var multiline = (d.name || "").split(" ").length > 1;
-	          return function() {
-	            var angle = x(d.x + d.dx / 2) * 180 / Math.PI - 90,
-	                rotate = angle + (multiline ? -.5 : 0);
-	            return "rotate(" + rotate + ")translate(" + (y(d.y) + padding) + ")rotate(" + (angle > 90 ? -180 : 0) + ")";
-	          };
-	        })
-	        .style("fill-opacity", function(e) { return isParentOf(d, e) ? 1 : 1e-6; })
-	        .each("end", function(e) {
-	          d3.select(this).style("visibility", isParentOf(d, e) ? null : "hidden");
-	        });
-	  }
+		function click(d) { // place to put click actions
+			d3Magic.node = d;
+			path.transition()
+			  .duration(duration)
+			  .attrTween("d", arcTweenZoom(d));
+			    // Somewhat of a hack as we rely on arcTween updating the scales.
+			text.style("visibility", function(e) {
+			      return isParentOf(d, e) ? null : d3.select(this).style("visibility");
+			    })
+			  .transition()
+			    .duration(duration)
+			    .attrTween("text-anchor", function(d) {
+			      return function() {
+			        return x(d.x + d.dx / 2) > Math.PI ? "end" : "start";
+			      };
+			    })
+			    .attrTween("transform", function(d) {
+			      var multiline = (d.name || "").split(" ").length > 1;
+			      return function() {
+			        var angle = x(d.x + d.dx / 2) * 180 / Math.PI - 90,
+			            rotate = angle + (multiline ? -.5 : 0);
+			        return "rotate(" + rotate + ")translate(" + (y(d.y) + padding) + ")rotate(" + (angle > 90 ? -180 : 0) + ")";
+			      };
+			    })
+			    .style("font-size", function (e){
+					// console.log(e.size, d3Magic.node.size);
+			    	return (d3Magic.node.depth * 3 + 12).toFixed(0) + "px" ;
+			    })
+			    .style("fill-opacity", function(e) { var opac = e.size / d3Magic.node.size <= 0.015 ? 0 : 1; return isParentOf(d, e) ? opac : 1e-6; })
+			    .each("end", function(e) {
+			    	// console.log(this, isParentOf(d, e) ? null : "hidden")
+			      d3.select(this).style("visibility", isParentOf(d, e) ? null : "hidden");
+			    });
+		}
 	});
 
 	function textClick(d) {
@@ -178,7 +205,7 @@ d3Magic.generateFromURI = function (uri, client_name, location_name) {
 	  	// console.log(node)
 	   // If we are on the first arc, adjust the x domain to match the root node
 	   // at the current zoom level. (We only need to do this once.)
-	    var xd = d3.interpolate(x.domain(), [node.x, node.x + node.dx]);
+	    var xd = d3.interpolate(x.domain(), [d3Magic.node.x, d3Magic.node.x + d3Magic.node.dx]);
 	    return function(t) {
 	      x.domain(xd(t));
 	      return tween(t);

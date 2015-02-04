@@ -1,13 +1,16 @@
 <html>
 	<head>
+	<title>Enertiv Labs</title>
+		<meta charset="utf-8">
 		<script type="text/javascript" src="{{ url_for('static', filename='js/d3.v3.min.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/d3-tip.min.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/basicTree.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/d3magic.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/moment.js') }}"></script>
-    <!-- <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script> -->
-	 	<!-- <script src="http://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.0-rc2/js/bootstrap.min.js"></script> -->
-		<link href='http://fonts.googleapis.com/css?family=Actor' rel='stylesheet' type='text/css'>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+	 	<script src="http://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.0-rc2/js/bootstrap.min.js"></script>
+		<!-- <link href='http://fonts.googleapis.com/css?family=Actor' rel='stylesheet' type='text/css'> -->
+		<link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
 		<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
 		<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/basic.css') }}">
 	</head>
@@ -16,13 +19,23 @@
 		  <div class="container-fluid">
 		    <!-- Brand and toggle get grouped for better mobile display -->
 		    <div class="navbar-header">
-				<a class="navbar-brand" href="www.enertiv.com">
+				<a class="navbar-brand" href="http://www.enertiv.com">
  					<img src='/static/img/enertiv-logo.png' width='76' height='24'/>
  				</a>
 		    </div>
 		    <!-- Collect the nav links, forms, and other content for toggling -->
 		    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 		      <ul class="nav navbar-nav">
+			      <li class="dropdown">
+		          <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="clientDrop" role="button" aria-expanded="false">Change Client<span class="caret"></span></a>
+		          <ul class="dropdown-menu nav-drop" id="client-dropdown" role="menu">
+		          </ul>
+		        </li>
+		        <li class="dropdown">
+			          <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="locationDrop" role="button" aria-expanded="false">Change Location<span class="caret"></span></a>
+			          <ul class="dropdown-menu nav-drop" id="location-dropdown" role="menu">
+			          </ul>
+			        </li>
 		      </ul>
 		    </div><!-- /.navbar-collapse -->
 		  </div><!-- /.container-fluid -->
@@ -30,19 +43,19 @@
 		<div class="container">
 			<div class="well center" >
 				<div>
-					<h2>Usage for the <span id="clientName"></span></h2>
+					<h2>Usage for the <span id="clientName"></span> - <span id="locationName"></span></h2>
 					<h3>From <span id="fromTime"></span> to <span id="toTime"></span></h3>
 				</div>
-					<div id="graph">
-		<!-- 				<form>
-						  <label><input type="radio" name="mode" value="size"> Size</label>
-						  <label><input type="radio" name="mode" value="count" checked> Count</label>
-						</form> -->
-					</div>
-					<div class="left">
-						<h3>Directions</h3>
-						<p>Click on a partition to zoom in and click the center to go back a level.</p>
-					</div>
+				<div id="graph">
+	<!-- 				<form>
+					  <label><input type="radio" name="mode" value="size"> Size</label>
+					  <label><input type="radio" name="mode" value="count" checked> Count</label>
+					</form> -->
+				</div>
+				<div class="left">
+					<h3>Directions</h3>
+					<p>Click on a partition to zoom in and click the center to go back a level.  Hover over text to get kWh info.</p>
+				</div>
 				</div>
 			<script type="text/javascript" data-toggle="tooltip" title="hats" src="{{ url_for('static', filename='js/demo.js') }}"></script>
 	  </div>
