@@ -1,5 +1,5 @@
 # Enertiv API Demo
-![Enertiv API Demo Screenshot](https://bytebucket.org/enertiv/enertiv_api_demo/raw/bb44de7e43ab246c547be9131ceaa6661c4582f3/static/img/sunburst.png?token=28ee024581cd749694d62fa7ff73d8ab290d113e "Enertiv API Demo")
+![Enertiv API Demo Screenshot](https://bitbucket.org/enertiv/enertiv_api_demo/raw/master/static/img/sunburst.png "Enertiv API Demo")
 
 The Enertiv Platform makes energy usage data 100% transparent in buildings. Our API lets you traverse the building hierarchy, from portfolio, to individual buildings, to sub-locations within a building, such as rooms and floors, to individual pieces of equipment, such as lights and air conditioners. Customized groups of equipment can also be tracked and managed with the API. The API also supports relevant metadata such as weather, occupancy, square footage, etc. for buildings monitored.
 
