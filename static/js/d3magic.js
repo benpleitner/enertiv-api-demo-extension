@@ -50,7 +50,29 @@ d3Magic.generateFromURI = function (uri, client_name, location_name) {
 	// 	}
 	// }
 
+	var opts = {
+		lines: 13, // The number of lines to draw
+		length: 20, // The length of each line
+		width: 10, // The line thickness
+		radius: 30, // The radius of the inner circle
+		corners: 1, // Corner roundness (0..1)
+		rotate: 0, // The rotation offset
+		direction: 1, // 1: clockwise, -1: counterclockwise
+		color: '#03b7f9', // #rgb or #rrggbb or array of colors
+		speed: 1, // Rounds per second
+		trail: 60, // Afterglow percentage
+		shadow: false, // Whether to render a shadow
+		hwaccel: false, // Whether to use hardware acceleration
+		className: 'spinner', // The CSS class to assign to the spinner
+		zIndex: 2e9, // The z-index (defaults to 2000000000)
+		top: '50%', // Top position relative to parent
+		left: '50%' // Left position relative to parent
+	};
+
 	d3.select("#sunburst").remove();
+
+	var target = document.getElementById('spin');
+	d3Magic.spinner = new Spinner(opts).spin(target);
 
 	var svg = d3.select("#graph").append("div")
 		.attr("id", "sunburst")
@@ -88,7 +110,9 @@ d3Magic.generateFromURI = function (uri, client_name, location_name) {
 		    .attr("fill-opacity", function (d) {return 1 - d.depth / 7; })
 		    .style("fill", function(d) {return color((d.children ? d : d.parent).name); })
 		    .on("click", click)
-		    .each(stash);
+		    .each(stash)
+		    .on("mouseover", function (){d3.select(this).attr("fill-opacity", 1)})
+		    .on("mouseout", function (d){d3.select(this).attr("fill-opacity", 1 - d.depth / 7)});
 
 		var text = svg.selectAll("text")
 		    .data(partition.nodes)
@@ -176,6 +200,7 @@ d3Magic.generateFromURI = function (uri, client_name, location_name) {
 			      d3.select(this).style("visibility", isParentOf(d, e) ? null : "hidden");
 			    });
 		}
+		d3Magic.spinner.stop()
 	});
 
 	function textClick(d) {
