@@ -1,5 +1,4 @@
 # Enertiv API Demo
-![Enertiv API Demo Screenshot](https://bitbucket.org/enertiv/enertiv_api_demo/raw/master/static/img/sunburst.png "Enertiv API Demo")
 
 The Enertiv Platform makes energy usage data 100% transparent in buildings. Our API lets you traverse the building hierarchy, from portfolio, to individual buildings, to sub-locations within a building, such as rooms and floors, to individual pieces of equipment, such as lights and air conditioners. Customized groups of equipment can also be tracked and managed with the API. The API also supports relevant metadata such as weather, occupancy, square footage, etc. for buildings monitored.
 
@@ -59,6 +58,9 @@ To get your credentials for the Enertiv API and see live data: `http://bit.ly/1L
 
 Once the server is up and running simply go to `http://localhost:11999` in your browser.
 
+## Screenshot
+
+![Enertiv API Demo Screenshot](https://bitbucket.org/enertiv/enertiv_api_demo/raw/master/static/img/sunburst.png "Enertiv API Demo")
 
 ## Inspiration
 This D3 code was inspired by a couple of fantastic examples: `http://www.jasondavies.com/coffee-wheel/` and `http://bl.ocks.org/kerryrodden/477c1bfb081b783f80ad`
