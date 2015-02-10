@@ -123,7 +123,7 @@ def main(argv):
         client.timeout = 600
     # client.get("https://ems.enertiv.com/api/client")
     # print client.access_token
-    # Bind to PORT if defined, otherwise default to 5000.
+    # Bind to PORT if defined, otherwise default to 11999.
     port = int(os.environ.get('PORT', 11999))
     app.run(host='0.0.0.0', port=port)
 

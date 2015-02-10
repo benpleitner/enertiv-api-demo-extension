@@ -9,7 +9,6 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
-
 var today = moment(),
 	yesterday = today - 24*60*60*1000,
 	fromTime = moment(yesterday).format('YYYY-MM-DD 05:00:00') + "Z",
@@ -45,6 +44,7 @@ function parseClients(clients){
 	return client_obj
 }
 
+
 function parseLocation(locations){
 	d3.selectAll(".location-li").remove()
 	var location_obj = {},
@@ -60,7 +60,8 @@ function parseLocation(locations){
 	};
 	return location_obj
 }
-	
+
+
 function generateSun(location_data) {
 	var start = moment(),
 		location_name = location_data["name"],
@@ -98,20 +99,6 @@ d3.json("/client", function (clients) {    // Make an AJAX request to pull the l
 	// console.log(client_obj);
 	postLocation(client_data);
 })
-
-// $(document.body).on( 'click', '#client-dropdown li', function( event ) {
-// 	console.log(this);
-// 	d3.select("#test").text(this.textContent)
-// 	// var $target = $( event.currentTarget );
-
-// 	// $target.closest( '.btn-group' )
-// 	//    .find( '[data-bind="label"]' ).text( $target.text() )
-// 	//       .end()
-// 	//    .children( '.dropdown-toggle' ).dropdown( 'toggle' );
-
-// 	return false;
-
-// });
 
 $(document.body).on( 'click', '#client-dropdown li', function( event ) {
 	$("#locationDrop")
