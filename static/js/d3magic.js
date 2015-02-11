@@ -112,7 +112,7 @@ d3Magic.generateFromURI = function (uri, client_name, location_name) {
 	var start = moment();
 	console.log("fetching")
 	d3.json(uri, function (error,json) {
-		console.log("back " + (moment() - start) + " ms")
+		console.log("finished after  " + (moment() - start) + " ms")
 		root = basicTree.combine_tree(json, client_name, location_name); // transform into tree format
 		d3Magic.node = root;
 		var path = svg.datum(root).selectAll("path")

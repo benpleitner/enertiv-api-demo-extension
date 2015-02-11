@@ -54,7 +54,7 @@ def client_info():
 
 @app.route('/client/<uuid>')
 def client_lookup(uuid):
-    response = client.get("https://%s/api/client/%s" % (api_url,uuid))
+    response = client.get("https://%s/api/client/%s" % (api_url, uuid))
     return response.text
 
 
@@ -62,7 +62,7 @@ def client_lookup(uuid):
 def location_info():
     location_uuid = request.args.get('location_uuid')
     # print "Request string: " + request.query_string
-    url = "https://%s/api/location/%s" % (api_url,location_uuid)
+    url = "https://%s/api/location/%s" % (api_url, location_uuid)
     response = client.get(url)
     print "\n/location/location\n\t"
     return response.text
@@ -116,9 +116,11 @@ def show(page):
 
 
 def main(argv):
-    # Updates the global client email
+    # Updates the global client
+    # https://bitbucket.org/enertiv/api_client
     global client
     if len(argv) > 3:
+        # SERVER_NAME SERVER_PASSWORD CLIENT_ID CLIENT_SECRET
         client = EnertivOAuthClient(argv[0],argv[1], "https", api_url, 443, argv[2], argv[3])
         client.timeout = 600
     # client.get("https://ems.enertiv.com/api/client")

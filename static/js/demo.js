@@ -8,6 +8,50 @@
 // ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+console.log("Start at the client level metadata");
+d3.json("/client", function (clients) {    // Make an AJAX request to pull the list of available clients
+	console.log("Location Metadata")
+	console.log(clients);   								 // location data
+	var client_data = clients[0];					// default client
+
+	client_data_obj = parseClients(clients);
+	// console.log(client_obj);
+	postLocation(client_data);
+})
+
+
+console.log("Carry that information to access the location level metadata");
+function postLocation(client_data){
+	var client_uuid = client_data.uuid;			// capture the client uuid
+		client_name = client_data["name"];
+
+	d3.selectAll("#clientName").text(client_name)  // Set the client name dynamically
+
+	d3.json("/client/location?uuid=" + client_uuid , function (location_data) {  // Make an AJAX request to capture the metadata based off the location uuid
+		console.log("Location Information")  
+		console.log(location_data);												// location information
+		location_data_obj = parseLocation(location_data);
+		generateSun(location_data[0]);
+		// Sunburst Chart with location data
+	});
+}
+
+
+console.log("Finally pass that information to the location data query to retrieve that data and display the visualization")
+function generateSun(location_data) {
+	var start = moment(),
+		location_name = location_data["name"],
+		location_uuid = location_data["uuid"],
+		deagg_uri = generateURI(location_uuid)
+			// ,
+			// agg_uri = "/location/data?location_uuid=" + location_uuid + "&q_string=fromTime%3D" + fromTime +"%26toTime%3D" + toTime +"%26interval%3D" + interval +"%26aggregate%3dtrue%26data_format%3Drickshaw"
+			;
+	// console.log(deagg_uri);
+	d3.selectAll("#locationName").text(location_name)  // Set the location name dynamically
+	d3Magic.generateFromURI(deagg_uri, client_name, location_name);
+}
+
+
 
 var today = moment(),
 	yesterday = today - 24*60*60*1000,
@@ -19,16 +63,20 @@ var today = moment(),
 	client_data_obj = {},    
 	location_data_obj = {};
 
+
 function readableDate(dateString){
 	return moment(dateString).format('MMMM Do YYYY')
 }
+
 
 function generateURI(location_uuid){
 	return "/location/data?location_uuid=" + location_uuid + "&q_string=fromTime%3D" + fromTime +"%26toTime%3D" + toTime +"%26interval%3D" + interval +"%26aggregate%3dfalse%26data_format%3Drickshaw";
 }
 
+
 d3.select("#fromTime").text(readableDate(fromTime));
 d3.select("#toTime").text(readableDate(toTime));
+
 
 function parseClients(clients){
 	clients = clients.reverse();
@@ -61,44 +109,6 @@ function parseLocation(locations){
 	return location_obj
 }
 
-
-function generateSun(location_data) {
-	var start = moment(),
-		location_name = location_data["name"],
-		location_uuid = location_data["uuid"],
-		deagg_uri = generateURI(location_uuid)
-			// ,
-			// agg_uri = "/location/data?location_uuid=" + location_uuid + "&q_string=fromTime%3D" + fromTime +"%26toTime%3D" + toTime +"%26interval%3D" + interval +"%26aggregate%3dtrue%26data_format%3Drickshaw"
-			;
-	d3.selectAll("#locationName").text(location_name)  // Set the location name dynamically
-	d3Magic.generateFromURI(deagg_uri, client_name, location_name);
-}
-
-
-function postLocation(client_data){
-	var client_uuid = client_data.uuid;			// capture the client uuid
-		client_name = client_data["name"];
-
-	d3.selectAll("#clientName").text(client_name)  // Set the client name dynamically
-
-	d3.json("/client/location?uuid=" + client_uuid , function (location_data) {  // Make an AJAX request to capture the metadata based off the location uuid
-		console.log("Location Information")  
-		console.log(location_data);												// location information
-		location_data_obj = parseLocation(location_data);
-		generateSun(location_data[0]);
-		// Sunburst Chart with location data
-	});
-}
-
-d3.json("/client", function (clients) {    // Make an AJAX request to pull the list of available clients
-	console.log("Location Metadata")
-	console.log(clients);   								 // location data
-	var client_data = clients[0];					// default client
-
-	client_data_obj = parseClients(clients);
-	// console.log(client_obj);
-	postLocation(client_data);
-})
 
 $(document.body).on( 'click', '#client-dropdown li', function( event ) {
 	$("#locationDrop")
