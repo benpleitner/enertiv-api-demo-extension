@@ -17,9 +17,9 @@ var d3Magic = d3Magic || {};
 d3Magic.node;
 
 d3Magic.generateFromURI = function (uri, client_name, location_name) {
-	var innerWidth = d3.min([1100, window.innerWidth * 0.8]),
-		width = innerWidth
-	    height = innerWidth,
+	var inner = d3.min([1100, window.innerHeight * 0.8]),
+		width = inner
+	    height = inner,
 	    radius = Math.min(width, height) / 2 - 30
 	    padding = 5,
 	    duration = 1250;

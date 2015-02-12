@@ -72,7 +72,7 @@ def location_info():
 def client_location():
     if client != None:
         uuid = request.args.get('uuid')
-        url = "https://%s/api/client/%s/location" % (api_url,uuid)
+        url = "https://%s/api/client/%s/location" % (api_url, uuid)
         response_raw = client.get(url)
         response = response_raw.text
         print uuid
