@@ -37,7 +37,7 @@ function postLocation(client_data){
 }
 
 
-console.log("Finally pass that information to the location data query to retrieve that data and display the visualization")
+console.log("Finally pass that information to the location metadata query to retrieve that data and display the visualization")
 function generateSun(location_data) {
 	var start = moment(),
 		location_name = location_data["name"],
