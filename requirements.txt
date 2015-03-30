@@ -4,7 +4,7 @@ Jinja2==2.7.3
 Markdown==2.5.2
 MarkupSafe==0.23
 Werkzeug==0.9.6
--e git+https://bitbucket.org/enertiv/api_client.git@a9ee9b9fe63ee568357bf49f17c0cffca2b9eeca#egg=api_client-origin/master
+-e git+https://bitbucket.org/enertiv/api_client.git#egg=api_client
 gunicorn==19.1.1
 itsdangerous==0.24
 requests==2.5.1
