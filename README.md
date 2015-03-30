@@ -39,6 +39,9 @@ pip install virtualenvwrapper-win
 # fire up your virtual environment
 $ mkvirtualenv api_demo
 
+# to activate the already created virtualenv
+workon api_demo
+
 # Install dependencies via pip
 pip install -r requirements.txt
 ```
