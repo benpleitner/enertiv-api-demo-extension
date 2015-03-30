@@ -26,11 +26,14 @@ Run this code in your terminal or command prompt to get the environment ready.
 git clone git@bitbucket.org:enertiv/enertiv_api_demo.git
 cd enertiv_api_demo
 
-# If not already present install virtualenv and virtualenvwrapper on your system
+# If not already present install virtualenv and virtualenvwrapper on your system: Full instructions - http://virtualenvwrapper.readthedocs.org/en/latest/
 pip install virtualenv
 pip install virtualenvwrapper  
+export WORKON_HOME=~/Envs
+mkdir -p $WORKON_HOME
+source /usr/local/bin/virtualenvwrapper.sh
 
-# or for Windows users 
+# or for Windows users: https://pypi.python.org/pypi/virtualenvwrapper-win
 pip install virtualenvwrapper-win
 
 # fire up your virtual environment
