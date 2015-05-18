@@ -37,7 +37,7 @@ source /usr/local/bin/virtualenvwrapper.sh
 pip install virtualenvwrapper-win
 
 # fire up your virtual environment
-$ mkvirtualenv api_demo
+mkvirtualenv api_demo
 
 # to activate the already created virtualenv
 workon api_demo
