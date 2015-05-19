@@ -60,7 +60,7 @@ var today = moment(),
 	interval = "15min",
 	// declare in the global scope to follow it around
 	client_name = "",
-	client_data_obj = {},    
+	client_data_obj = {},
 	location_data_obj = {};
 
 

@@ -1,1 +1,31 @@
-[{"uuid":"8639f0e6-1623-4e60-8164-a853fb807917","location_type":{"name":"Office"},"name":"Office Demo","address_1":"333 W 39th St","address_2":"2nd Floor","city":"New York","state":"NY","zip":"10018","zip4":null,"country":"US","latitude":40.75612,"longitude":-73.9925,"sublocations":["a5528323-b059-4552-933a-7cafd5f5b935","33f501d0-cf65-463f-9023-d8cdcc5b2097","519e7fee-829d-461e-9612-5594adc3b237","ceea0377-d098-4b76-a99c-1c7ab96ec468","edc5a28f-d668-42dd-9e64-e4725b834340","88111953-3c60-4f72-871e-4e284edb9184","c2c43a6a-331e-47fa-95b6-664a2ce9db6c","a297b1d9-7db2-4535-85ec-45439f769e96"],"emission_factor":0.29480770705,"id":5,"image":""}]
+[
+  {
+    "uuid": "8639f0e6-1623-4e60-8164-a853fb807917",
+    "location_type": {
+      "name": "Office"
+    },
+    "name": "Office Demo",
+    "address_1": "333 W 39th St",
+    "address_2": "2nd Floor",
+    "city": "New York",
+    "state": "NY",
+    "zip": "10018",
+    "zip4": null,
+    "country": "US",
+    "latitude": 40.75612,
+    "longitude": -73.9925,
+    "sublocations": [
+      "a5528323-b059-4552-933a-7cafd5f5b935",
+      "33f501d0-cf65-463f-9023-d8cdcc5b2097",
+      "519e7fee-829d-461e-9612-5594adc3b237",
+      "ceea0377-d098-4b76-a99c-1c7ab96ec468",
+      "edc5a28f-d668-42dd-9e64-e4725b834340",
+      "88111953-3c60-4f72-871e-4e284edb9184",
+      "c2c43a6a-331e-47fa-95b6-664a2ce9db6c",
+      "a297b1d9-7db2-4535-85ec-45439f769e96"
+    ],
+    "emission_factor": 0.29480770705,
+    "id": 5,
+    "image": ""
+  }
+]
