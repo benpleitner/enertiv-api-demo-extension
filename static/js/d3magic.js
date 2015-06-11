@@ -17,265 +17,330 @@ var d3Magic = d3Magic || {};
 d3Magic.node;
 
 d3Magic.generateFromURI = function (uri, client_name, location_name) {
-  var inner = d3.min([1100, window.innerHeight * 0.8]),
-    width = inner,
-      height = inner,
-      radius = Math.min(width, height) / 2 - 30,
-      padding = 5,
-      duration = 1250;
+  d3.json(uri, function(error, rawData) {
+    //Totals
+    var totals = {},
+        costs = {},
+        maxTotal = 0,
+        forGraphTotal = [];
 
-  var x = d3.scale.linear()
-      .range([0, 2 * Math.PI]);
+    rawData.forEach(function(d) {
+      var name = d.sublocation_name,
+          data = d.data;
 
-  var y = d3.scale.sqrt()
-      .range([0, radius]);
+      var total = 0;
+      var totalC = 0;
+      for (var k = 0; k < data.length; k++) {
+        total += data[k].y;
+        totalC += data[k].total_cost;
+      }
 
-  var color = d3.scale.category20c();
-  // var color = d3.scale.category20c();
+      if (Object.keys(totals).indexOf(name) != -1) {
+        totals[name] += total;
+        if (totals[name] > maxTotal) {
+          maxTotal = totals[name];
+        }
+      } else {
+        totals[name] = total;
+        if (totals[name] > maxTotal) {
+          maxTotal = totals[name];
+        }
+      }
 
-  function colour(d) {
-    if (d.children) {
-      // There is a maximum of two children!
-      var colours = d.children.map(colour),
-          a = d3.hsl(colours[0]),
-          b = d3.hsl(colours[1]);
-      // L*a*b* might be better here...
-      return d3.hsl((a.h + b.h) / 2, a.s * 1.2, a.l / 1.2);
-    }
-    return d.colour || "#fff";
-  }
-
-  var tip = d3.tip()
-    .attr('class', 'd3-tip fade')
-    // .attr('class', "fade")
-    .offset([-25,0])
-    .html(function(d) {
-      // console.log(color((d.children ? d : d.parent).name));
-      return "<p class='light'>" + d.name + "</p><p class='light'><span class='big''>" + d.size.toFixed(1)  + "</span> kWh<p>";
+      if (Object.keys(costs).indexOf("" + name) != -1) {
+        costs[name] += totalC;
+      } else {
+        costs[name] = totalC;
+      }
     });
 
-  // function top (data) {
-  //  if (data.parent !== undefined) {
-  //    return top(data.parent)
-  //  } else {
-  //    return data.size
-  //  }
-  // }
+    var maxIndex = 0;
 
-  var opts = {
-    lines: 13, // The number of lines to draw
-    length: 20, // The length of each line
-    width: 10, // The line thickness
-    radius: 30, // The radius of the inner circle
-    corners: 1, // Corner roundness (0..1)
-    rotate: 0, // The rotation offset
-    direction: 1, // 1: clockwise, -1: counterclockwise
-    color: '#03b7f9', // #rgb or #rrggbb or array of colors
-    speed: 1, // Rounds per second
-    trail: 60, // Afterglow percentage
-    shadow: false, // Whether to render a shadow
-    hwaccel: false, // Whether to use hardware acceleration
-    className: 'spinner', // The CSS class to assign to the spinner
-    zIndex: 2e9, // The z-index (defaults to 2000000000)
-    top: '50%', // Top position relative to parent
-    left: '50%' // Left position relative to parent
-  };
+    var arr = Object.keys(totals);
+    for (var i = 0; i < arr.length; i++) {
+      maxIndex = arr.length - 1;
 
-  d3.select("#sunburst").remove();
+      forGraphTotal.push({ name: arr[i],
+                      index: i,
+                      value: totals[arr[i]],
+                      cost: costs[arr[i]]});   
+    }
 
-  var target = document.getElementById('spin');
-  d3Magic.spinner = new Spinner(opts).spin(target);
 
-  var svg = d3.select("#graph").append("div")
-    .attr("id", "sunburst")
-  .append("svg")
-      .attr("width", width)
-      .attr("height", height)
-    .append("g")
-      .attr("transform", "translate(" + width / 2 + "," + (height / 2 + 10) + ")");
 
-  svg.call(tip);
 
-  var partition = d3.layout.partition()
-      .sort(null)
-      .value(function(d) { 
-        return d.size; // size default
-        // return 1;  // count default
+
+
+
+
+
+
+    //Store the day of the week for each data point
+    rawData.forEach(function(d) {
+      d.data.forEach(function (d, i) {
+        var d_date = moment(d.x * 1000).format("dddd");
+        d.day = d_date
       });
+    });
 
-  var arc = d3.svg.arc()
-      .startAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x))); })
-      .endAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx))); })
-      .innerRadius(function(d) { return Math.max(0, y(d.y)); })
-      .outerRadius(function(d) { return Math.max(0, y(d.y + d.dy)); });
+    //Declare variables for data calculations
+    var weekdayUsage = {},
+        weekdayCost = {},
+        weekendUsage = {},
+        weekendCost = {},
+        forGraphWeekdays = [];
 
-  var start = moment();
-  console.log("fetching")
-  d3.json(uri, function (error,json) {
-    console.log("finished after  " + (moment() - start) + " ms")
-    root = basicTree.combine_tree(json, client_name, location_name); // transform into tree format
-    d3Magic.node = root;
-    var path = svg.datum(root).selectAll("path")
-        .data(partition.nodes)
-      .enter().append("path")
-        .attr("d", arc)
-        .attr("fill-opacity", function (d) {return 1 - d.depth / 7; })
-        .style("fill", function(d) {return color((d.children ? d : d.parent).name); })
-        .on("click", click)
-        .each(stash)
-        .on("mouseover", function (){d3.select(this).attr("fill-opacity", 1)})
-        .on("mouseout", function (d){d3.select(this).attr("fill-opacity", 1 - d.depth / 7)});
+    var mondayUsage = {},
+        tuesdayUsage = {},
+        wednesdayUsage = {},
+        thursdayUsage = {},
+        fridayUsage = {},
+        saturdayUsage = {},
+        sundayUsage = {};
 
-    var text = svg.selectAll("text")
-        .data(partition.nodes)
-        .enter().append("text")
-        .style("fill-opacity", function (d){
-          return d.size / d3Magic.node.size <= 0.015 ? 0 : 1;
-        })
+    rawData.forEach(function(d) {
+      var roomName = d.sublocation_name;
+      var equipmentName = d.equipment_type;
+
+      d.data.forEach(function (d, i) {
+        var day = d.day,
+            output = d.y,
+            cost = d.total_cost;
+
+        //Build the days of the week data
+      if (day == "Monday") {
+          if (Object.keys(mondayUsage).indexOf("" + roomName) != -1) {
+            mondayUsage[roomName] += output;
+          } else {
+            mondayUsage[roomName] = output;
+          }
+      }
+      else if (day == "Tuesday") {
+          if (Object.keys(tuesdayUsage).indexOf("" + roomName) != -1) {
+            tuesdayUsage[roomName] += output;
+          } else {
+            tuesdayUsage[roomName] = output;
+          }
+      }
+      else if (day == "Wednesday") {
+          if (Object.keys(wednesdayUsage).indexOf("" + roomName) != -1) {
+            wednesdayUsage[roomName] += output;
+          } else {
+            wednesdayUsage[roomName] = output;
+          }
+      }
+      else if (day == "Thursday") {
+          if (Object.keys(thursdayUsage).indexOf("" + roomName) != -1) {
+            thursdayUsage[roomName] += output;
+          } else {
+            thursdayUsage[roomName] = output;
+          }
+      }
+      else if (day == "Friday") {
+          if (Object.keys(fridayUsage).indexOf("" + roomName) != -1) {
+            fridayUsage[roomName] += output;
+          } else {
+            fridayUsage[roomName] = output;
+          }
+      }
+      else if (day == "Saturday") {
+          if (Object.keys(saturdayUsage).indexOf("" + roomName) != -1) {
+            saturdayUsage[roomName] += output;
+          } else {
+            saturdayUsage[roomName] = output;
+          }
+      }
+      else {
+          if (Object.keys(sundayUsage).indexOf("" + roomName) != -1) {
+            sundayUsage[roomName] += output;
+          } else {
+            sundayUsage[roomName] = output;
+          }
+      }
+      });
+    });
+    var roomsArr = Object.keys(sundayUsage);
+    for (var i = 0; i < roomsArr.length; i++) {
+      forGraphWeekdays.push({  room: roomsArr[i],
+                   index: i,
+                         value: sundayUsage[roomsArr[i]],
+                         day: 1,
+                         weekday: 0
+                      });
+    }
+    roomsArr = Object.keys(mondayUsage);
+    for (var i = 0; i < roomsArr.length; i++) {
+      forGraphWeekdays.push({  room: roomsArr[i],
+                   index: i,
+                         value: mondayUsage[roomsArr[i]],
+                         day: 2,
+                         weekday: 1
+                      });
+    }
+    roomsArr = Object.keys(tuesdayUsage);
+    for (var i = 0; i < roomsArr.length; i++) {
+      forGraphWeekdays.push({  room: roomsArr[i],
+                   index: i,
+                         value: tuesdayUsage[roomsArr[i]],
+                         day: 3,
+                         weekday: 1
+                      });
+    }
+    roomsArr = Object.keys(wednesdayUsage);
+    for (var i = 0; i < roomsArr.length; i++) {
+      forGraphWeekdays.push({  room: roomsArr[i],
+                   index: i,
+                         value: wednesdayUsage[roomsArr[i]],
+                         day: 4,
+                         weekday: 1
+                      });
+    }
+    roomsArr = Object.keys(thursdayUsage);
+    for (var i = 0; i < roomsArr.length; i++) {
+      forGraphWeekdays.push({  room: roomsArr[i],
+                   index: i,
+                         value: thursdayUsage[roomsArr[i]],
+                         day: 5,
+                         weekday: 1
+                      });
+    }
+    roomsArr = Object.keys(fridayUsage);
+    for (var i = 0; i < roomsArr.length; i++) {
+      forGraphWeekdays.push({  room: roomsArr[i],
+                   index: i,
+                         value: fridayUsage[roomsArr[i]],
+                         day: 6,
+                         weekday: 1
+                      });
+    }
+    roomsArr = Object.keys(saturdayUsage);
+    for (var i = 0; i < roomsArr.length; i++) {
+      forGraphWeekdays.push({  room: roomsArr[i],
+                   index: i,
+                         value: saturdayUsage[roomsArr[i]],
+                         day: 7,
+                         weekday: 0
+                      });
+    }
+
+
+
+
+
+
+
+    //Crossfilters
+    var roomArray = [];
+    forGraphWeekdays.forEach(function(d) {
+      roomArray[d.index] = d.room;
+    });
+
+    var data = forGraphWeekdays
+
+    var ndx = crossfilter(data);
+
+    var daysOfWeek = ndx.dimension(function(d) {
+      return d.day;
+    });
+
+    var kW2 = daysOfWeek.group().reduceSum(function(d) {
+      return d.value;
+    });
+
+    var weekdays = ndx.dimension(function(d) {
+      return d.weekday;
+    });
+
+    var kW1 = weekdays.group().reduceSum(function(d) {
+      return d.value;
+    });
+
+    var rooms = ndx.dimension(function(d) {
+      return d.index;
+    });
+
+    var kW = rooms.group().reduceSum(function(d) {
+      return d.value;
+    });
+
+    // var cost = rooms.group().reduceSum(function(d) {
+    //   return d.cost;
+    // });
+
+    //Bar Chart
+    barChart = dc.barChart("#roomBarChart");
     
-      .style("fill", function(d) {
-        return brightness(d3.rgb(colour(d))) < 125 ? "#eee" : "#555";
-      })
-      .attr("text-anchor", function(d) {
-        return x(d.x + d.dx / 2) > Math.PI ? "end" : "start";
-      })
-      .attr("dy", ".2em")
-      .attr("transform", function(d) {
-        var multiline = (d.name || "").split(" ").length > 1,
-            angle = x(d.x + d.dx / 2) * 180 / Math.PI - 90,
-            rotate = angle + (multiline ? -.5 : 0);
-        return "rotate(" + rotate + ")translate(" + (y(d.y) + padding) + ")rotate(" + (angle > 90 ? -180 : 0) + ")";
-      })
-      .on('mouseover', tip.show)
-      .on('mouseout', tip.hide)
-      .on("click", click);
+    barChart.width(800)
+          .height(350)
+          .margins({top: 10, right: 50, bottom: 30, left: 40})
+          .dimension(rooms)
+          .group(kW)
+          .elasticY(true)
+          .centerBar(true)
+          .gap(1)
+          .x(d3.scale.linear().domain([-1, roomArray.length]))
+          .yAxisLabel("kWh")
+          .xAxisLabel("Room")
+          .renderHorizontalGridLines(true)
+          .transitionDuration(700);
 
-    text.append("tspan")
-        .attr("x", 0)
-        .text(function(d) { return d.depth ? d.name.split(" ")[0] : ""; });
-    text.append("tspan")
-        .attr("x", 0)
-        .attr("dy", "2em")
-        .text(function(d) { return d.depth ? d.name.split(" ")[1] || "" : ""; });
-    text.append("tspan")
-        .attr("x", 0)
-        .attr("dy", "2em")
-        .text(function(d) { return d.depth ? d.name.split(" ")[2] || "" : ""; });
-        ;
-
-    d3.selectAll("input").on("change", function change() {
-      var value = this.value === "count" ? function() { return 1; } : function(d) { return d.size; };
-
-      path
-          .data(partition.value(value).nodes)
-        .transition()
-          .duration(duration)
-          .attrTween("d", arcTweenData);
-      text
-          .data(partition.value(value).nodes)
-        .transition()
-          .duration(duration)
-          .attrTween("d", arcTweenData);
+    barChart.xAxis().tickFormat(function (v) {
+      if (v == -1 || v == maxIndex + 1) {
+        return "";
+      }
+      return roomArray[v];
     });
 
-    function click(d) { // place to put click actions
-      d3Magic.node = d;
-      path.transition()
-        .duration(duration)
-        .attrTween("d", arcTweenZoom(d));
-          // Somewhat of a hack as we rely on arcTween updating the scales.
-      text.style("visibility", function(e) {
-            return isParentOf(d, e) ? null : d3.select(this).style("visibility");
+    //Pie Chart - weekdays and weekends
+    pieChart = dc.pieChart("#weekdayPieChart");
+    
+    pieChart.width(600)
+        .height(300)
+        .dimension(weekdays)
+        .group(kW1)
+        .innerRadius(80)
+        .colors(["#9CC706"])
+        .label(function (d) {
+          if (d.key == 1) {
+            return "Weekday";
+          } else {
+            return "Weekend";
+          }
+        })
+        .transitionDuration(700);
+
+    //Row Chart - Days of the week
+    rowChart = dc.rowChart("#dayRowChart");
+
+    rowChart.width(600)
+          .height(300)
+          .margins({top: 10, right: 50, bottom: 30, left: 40})
+          .dimension(daysOfWeek)
+          .group(kW2)
+          .elasticX(true)
+          .gap(1)
+          .x(d3.scale.linear().domain([-1, 8]))
+          .label(function(d) {
+            var day = d.key;
+          switch (day) {
+            case 1:
+              return "Sunday";
+            case 2:
+              return "Monday";
+            case 3:
+              return "Tuesday";
+            case 4:
+              return "Wednesday";
+            case 5:
+              return "Thursday";
+            case 6:
+              return "Friday";
+            case 7:
+              return "Saturday";
+          }
           })
-        .transition()
-          .duration(duration)
-          .attrTween("text-anchor", function(d) {
-            return function() {
-              return x(d.x + d.dx / 2) > Math.PI ? "end" : "start";
-            };
-          })
-          .attrTween("transform", function(d) {
-            var multiline = (d.name || "").split(" ").length > 1;
-            return function() {
-              var angle = x(d.x + d.dx / 2) * 180 / Math.PI - 90,
-                  rotate = angle + (multiline ? -.5 : 0);
-              return "rotate(" + rotate + ")translate(" + (y(d.y) + padding) + ")rotate(" + (angle > 90 ? -180 : 0) + ")";
-            };
-          })
-          .style("font-size", function (e){
-          // console.log(e.size, d3Magic.node.size);
-            return (d3Magic.node.depth * 3 + 12).toFixed(0) + "px" ;
-          })
-          .style("fill-opacity", function(e) { var opac = e.size / d3Magic.node.size <= 0.015 ? 0 : 1; return isParentOf(d, e) ? opac : 1e-6; })
-          .each("end", function(e) {
-            // console.log(this, isParentOf(d, e) ? null : "hidden")
-            d3.select(this).style("visibility", isParentOf(d, e) ? null : "hidden");
-          });
-    }
-    d3Magic.spinner.stop()
+          .transitionDuration(700);
+          dc.renderAll();
   });
-
-  function textClick(d) {
-    // "cursor", "pointer"
-    console.log(d.size);
-  }
-
-  d3.select(self.frameElement).style("height", height + "px");
-
-  // Setup for switching data: stash the old values for transition.
-  function stash(d) {
-    // console.log("clicked",d);
-    d.x0 = d.x;
-    d.dx0 = d.dx;
-  }
-
-  // When switching data: interpolate the arcs in data space.
-  function arcTweenData(a, i) {
-    var oi = d3.interpolate({x: a.x0, dx: a.dx0}, a);
-    function tween(t) {
-      var b = oi(t);
-      a.x0 = b.x;
-      a.dx0 = b.dx;
-      return arc(b);
-    }
-    if (i == 0) {
-      // console.log(node)
-     // If we are on the first arc, adjust the x domain to match the root node
-     // at the current zoom level. (We only need to do this once.)
-      var xd = d3.interpolate(x.domain(), [d3Magic.node.x, d3Magic.node.x + d3Magic.node.dx]);
-      return function(t) {
-        x.domain(xd(t));
-        return tween(t);
-      };
-    } else {
-      return tween;
-    }
-  }
-
-  function isParentOf(p, c) {
-    if (p === c) return true;
-    if (p.children) {
-      return p.children.some(function(d) {
-        return isParentOf(d, c);
-      });
-    }
-    return false;
-  }
-
-  // When zooming: interpolate the scales.
-  function arcTweenZoom(d) {
-    var xd = d3.interpolate(x.domain(), [d.x, d.x + d.dx]),
-        yd = d3.interpolate(y.domain(), [d.y, 1]),
-        yr = d3.interpolate(y.range(), [d.y ? 20 : 0, radius]);
-    return function(d, i) {
-      return i
-          ? function(t) { return arc(d); }
-          : function(t) { x.domain(xd(t)); y.domain(yd(t)).range(yr(t)); return arc(d); };
-    };
-  }
-
-  // http://www.w3.org/WAI/ER/WD-AERT/#color-contrast
-  function brightness(rgb) {
-    return rgb.r * .299 + rgb.g * .587 + rgb.b * .114;
-  }
-}
+  dc.renderAll();
+};

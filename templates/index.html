@@ -7,6 +7,8 @@
 		<script type="text/javascript" src="{{ url_for('static', filename='js/spin.min.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/d3-tip.min.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/basicTree.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/crossfilter.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/dc.js') }}"></script>	
 		<script type="text/javascript" src="{{ url_for('static', filename='js/d3magic.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/moment.js') }}"></script>
     <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
@@ -15,6 +17,7 @@
 		<link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
 		<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
 		<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/basic.css') }}">
+    	<link rel="stylesheet" href="{{ url_for('static', filename='css/dc.css') }}">
 	</head>
 	<body>
 		<nav class="navbar navbar-default">
@@ -48,20 +51,38 @@
 					<h2>Usage for <span id="clientName"></span>: <span id="locationName"></span></h2>
 					<h3><span id="fromTime"></span> to <span id="toTime"></span></h3>
 				</div>
-				<div id="graph">
-					<div id="spin"></div>
-	<!-- 				<form>
-					  <label><input type="radio" name="mode" value="size"> Size</label>
-					  <label><input type="radio" name="mode" value="count" checked> Count</label>
-					</form> -->
+
+
+				<div id="roomBarChart">
 				</div>
+
+				<div class="sameLine">
+					<div id="weekdayPieChart">
+					</div>
+
+					<div id="dayRowChart">
+					</div>
+				</div>
+
+				<div id="roomBarChart1">
+				</div>
+
+
+				<div class="sameLine">
+					<div id="occupancyPieChart">
+					</div>
+
+					<div id="hourRowChart">
+					</div>
+				</div>
+
+
 				<div class="left">
 					<h3>Directions</h3>
 					<p>Click on a partition to zoom in and click the center to zoom out.  Hover over text to get energy consumption info.</p>
 				</div>
 				</div>
-			<script type="text/javascript"></script>
-			<script type="text/javascript" data-toggle="tooltip" title="hats" src="{{ url_for('static', filename='js/demo.js') }}"></script>
+		<script type="text/javascript" data-toggle="tooltip" title="hats" src="{{ url_for('static', filename='js/demo.js') }}"></script>
 	  </div>
 	</body>
 </html>

@@ -54,10 +54,10 @@ function generateSun(location_data) {
 
 
 var today = moment(),
-	yesterday = today - 24*60*60*1000,
-	fromTime = moment(yesterday).format('YYYY-MM-DD 05:00:00') + "Z",
+	weekAgo = today - 7*24*60*60*1000,
+	fromTime = moment(weekAgo).format('YYYY-MM-DD 05:00:00') + "Z",
 	toTime = moment(today).format('YYYY-MM-DD 05:00:00') + "Z",
-	interval = "15min",
+	interval = "hour",
 	// declare in the global scope to follow it around
 	client_name = "",
 	client_data_obj = {},

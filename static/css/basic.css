@@ -112,3 +112,14 @@ nav.navbar {
   color: #555;  
   background: #fff;
 }
+
+/* Charts */
+#weekdayPieChart path:hover, #occupancyPieChart path:hover  {
+  fill: #790;
+}
+
+.sameLine {
+  display: flex;
+  margin-left: -100px;
+  padding-bottom: 100px;
+}
