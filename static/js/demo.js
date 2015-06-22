@@ -42,27 +42,30 @@ function generateSun(location_data) {
 	var start = moment(),
 		location_name = location_data["name"],
 		location_uuid = location_data["uuid"],
-		deagg_uri = generateURI(location_uuid)
+		deagg_uri = generateURI(location_uuid),
+		occupancy_uri = generateOccupancyURI(location_uuid)
+		current_day = moment(start).format("d");
+
 			// ,
 			// agg_uri = "/location/data?location_uuid=" + location_uuid + "&q_string=fromTime%3D" + fromTime +"%26toTime%3D" + toTime +"%26interval%3D" + interval +"%26aggregate%3dtrue%26data_format%3Drickshaw"
 			;
 	// console.log(deagg_uri);
 	d3.selectAll("#locationName").text(location_name)  // Set the location name dynamically
-	d3Magic.generateFromURI(deagg_uri, client_name, location_name);
+	d3Magic.generateFromOccupancyURI(occupancy_uri);
+	d3Magic.generateFromURI(deagg_uri, client_name, location_name, current_day);
 }
 
 
 
 var today = moment(),
 	weekAgo = today - 7*24*60*60*1000,
-	fromTime = moment(weekAgo).format('YYYY-MM-DD 05:00:00') + "Z",
-	toTime = moment(today).format('YYYY-MM-DD 05:00:00') + "Z",
+	fromTime = moment(weekAgo).format('YYYY-MM-DD 04:00:00') + "Z",
+	toTime = moment(today).format('YYYY-MM-DD 04:00:00') + "Z",
 	interval = "hour",
 	// declare in the global scope to follow it around
 	client_name = "",
 	client_data_obj = {},
 	location_data_obj = {};
-
 
 function readableDate(dateString){
 	return moment(dateString).format('MMMM Do YYYY')
@@ -71,6 +74,10 @@ function readableDate(dateString){
 
 function generateURI(location_uuid){
 	return "/location/data?location_uuid=" + location_uuid + "&q_string=fromTime%3D" + fromTime +"%26toTime%3D" + toTime +"%26interval%3D" + interval +"%26aggregate%3dfalse%26data_format%3Drickshaw";
+}
+
+function generateOccupancyURI(location_uuid) {
+	return "/location/occupancy?location_uuid=" + location_uuid;
 }
 
 

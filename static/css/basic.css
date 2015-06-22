@@ -1,5 +1,5 @@
-
 @import url("//netdna.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css");
+
 html, body { 
   font-family: "Roboto", sans-serif;
   background: url(../img/city.png) no-repeat center center fixed; 
@@ -114,12 +114,283 @@ nav.navbar {
 }
 
 /* Charts */
-#weekdayPieChart path:hover, #occupancyPieChart path:hover  {
-  fill: #790;
+#occupancyPieChart path:hover  {
+    fill-opacity: 0.6;
 }
 
 .sameLine {
   display: flex;
-  margin-left: -100px;
-  padding-bottom: 100px;
+  padding-bottom: 20px;
 }
+
+.sameLineBarChart {
+  display: flex;
+  padding-bottom: 20px;
+}
+
+.dc-data-table {
+}
+
+/* Button */
+.btn-geckoboard {
+  display: inline-block;
+  padding: 6px 12px;
+  margin-bottom: 0;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.42857143;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  -ms-touch-action: manipulation;
+  touch-action: manipulation;
+  cursor: pointer;
+  -webkit-user-select: none;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  color: #01256e;
+}
+
+.btn-group-lg>.btn, .btn-lg {
+  padding: 10px 16px;
+  font-size: 18px;
+  line-height: 1.3333333;
+  border-radius: 6px;
+}
+
+.btn-outline {
+  color: #01256e;
+  background-color: transparent;
+  border-color: #01256e;
+}
+
+.btn-geckoboard:hover {
+  background-color: #01256e;
+  color: #eee9e9;
+  text-decoration: none;
+}
+
+/* Summary text */
+#summaryText {
+  text-align: left;
+}
+
+#selectedText {
+  padding-top: 5px;
+  padding-bottom: 10px;
+  text-align: left;
+  color: #2eb9ea;
+}
+
+#calculations, #bc1, #bc2, #bc3, #bc4 {
+  display: none;
+}
+
+/* Breadcrumbs */
+.btn-breadcrumb .btn:not(:last-child):after {
+  content: " ";
+  display: block;
+  width: 0;
+  height: 0;
+  position: absolute;
+  top: 50%;
+  margin-top: -17px;
+  left: 100%;
+  z-index: 3;
+}
+
+.btn-breadcrumb .btn:not(:last-child):before {
+  content: " ";
+  display: block;
+  width: 0;
+  height: 0;
+  position: absolute;
+  top: 50%;
+  margin-top: -17px;
+  margin-left: 1px;
+  left: 100%;
+  z-index: 3;
+}
+
+.btn-breadcrumb .btn {
+  background-color: rgba(250, 250, 250, 0);
+}
+
+.btn-breadcrumb .btn.btn-default:not(:last-child):after {
+  border-left: 10px solid #fff;
+}
+
+.btn-breadcrumb .btn.btn-default:not(:last-child):before {
+  border-left: 10px solid #ccc;
+}
+
+.btn-breadcrumb .btn.btn-default:hover:not(:last-child):after {
+  border-left: 10px solid #ebebeb;
+}
+
+.btn-breadcrumb .btn.btn-default:hover:not(:last-child):before {
+  border-left: 10px solid #adadad;
+}
+
+#rButton {
+  float: right;
+}
+
+#stats {
+  padding-bottom: 10px;
+}
+
+/* Slider */
+body {
+  background-color: #393939;
+  font-size: 14px;
+  font-family: 'Raleway', sans-serif;
+}
+
+a {
+  color: #4FDEF2;
+}
+
+.axis {
+  fill: gray;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+}
+
+.axis .halo {
+  stroke: gray;
+  stroke-width: 4px;
+  stroke-linecap: round;
+}
+
+.slider .handle path {
+  stroke: #2eb9ea;
+  stroke-width: 3px;
+  stroke-linecap: round;
+  pointer-events: none;
+}
+
+.slider .handle text {
+  fill: #2eb9ea;
+  text-align: center;
+  font-size: 18px;
+}
+
+.sliderText {
+  padding-top: 20px;
+  margin-bottom: -50px;
+}
+
+/* Data table */
+#a {
+  display: block;
+  width: 100%;
+  border: 1px solid #eee;
+  max-height: 320px;
+  overflow: auto;
+  border: 1px solid black;
+}
+
+#a thead {
+  display: -webkit-flex;
+  -webkit-flex-flow: row;
+}
+
+#a thead tr {
+  display: -webkit-flex;
+  width: 100%;
+  -webkit-align-items: stretch;
+}
+
+#a tbody {
+  display: -webkit-flex;
+  height: 400px;
+  overflow: auto;
+  -webkit-flex-flow: row wrap;
+}
+#a tbody tr {
+  display: -webkit-flex;
+  width: 100%;
+}
+
+tbody {
+  display: table-row-group;
+  vertical-align: middle;
+  border-color: inherit;
+}
+
+table {
+  max-width: 100%;
+  background-color: transparent;
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+th, td {
+  padding: 8px;
+  width: 20%;
+  line-height: 20px;
+  text-align: center;
+  vertical-align: top;
+  border-top: 1px solid #ddd;
+}
+
+th {
+  border-bottom: 1px solid black;
+}
+
+.dc-table-group, .dc-table-label {
+  display: none;
+  padding: 0px;
+  line-height: 0px;
+}
+
+#dir {
+  padding-top: 100px;
+}
+
+.legendText {
+  font-size: 12px;
+  padding-right: 20px;
+}
+
+svg {
+  margin-top: 20px;
+  margin-bottom: -5px;
+}
+
+.last {
+  padding-right: 0px;
+}
+
+/* Other */
+#legend {
+  padding-bottom: 10px;
+}
+
+#heatmap {
+  padding-bottom: 50px;
+}
+
+/*#roomBarChart {
+  margin-left: -10px;
+  border: 1px solid #555;
+}
+
+#equipBarChart {
+  margin-right: -10px;
+  border: 1px solid #555;
+  border-left: none;
+}
+
+#occupancyPieChart {
+  margin-left: -10px;
+  border: 1px solid #555;
+}
+
+#dayRowChart {
+  margin-right: -10px;
+  border: 1px solid #555;
+  border-left: none;
+}*/

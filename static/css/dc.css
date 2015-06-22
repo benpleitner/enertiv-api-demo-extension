@@ -32,7 +32,7 @@
 }
 
 .dc-chart .pie-slice {
-    fill: white;
+    fill: black;
     font-size: 12px;
     cursor: pointer;
 }
@@ -210,7 +210,7 @@
 }
 
 .dc-chart g.row text {
-    fill: white;
+    fill: black;
     font-size: 12px;
     cursor: pointer;
 }
@@ -303,11 +303,15 @@
 
 .dc-chart .heatmap .box-group.deselected rect {
     stroke: none;
-    fill-opacity: .5;
-    fill: #ccc;
+    fill-opacity: 0.1;
+    fill: #ebeaed;
 }
 
 .dc-chart .heatmap g.axis text {
     pointer-events: all;
     cursor: pointer;
+}
+
+.dc-chart .heatmap .box-group.selected rect:hover, .dc-chart .heatmap .box-group rect:hover {
+    fill-opacity: 0.6;
 }

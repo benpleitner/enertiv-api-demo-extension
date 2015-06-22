@@ -19,6 +19,7 @@ from jinja2 import TemplateNotFound
 from flask.ext.assets import Environment, Bundle
 from api_client.enertiv_oauth_client import EnertivOAuthClient
 import requests
+import utils.utils as ut
 
 
 #instatntiate the web app
@@ -32,7 +33,7 @@ scss = Bundle('stylyn.scss', filters='pyscss', output='all.css')
 assets.register('scss_all', scss)
 
 client = None
-api_url = "api.enertiv.com"
+api_url = "ems.enertiv.com"
 
 
 @app.route('/')
@@ -104,6 +105,15 @@ def location_data():
             response = f.readlines()[0]
     return response
 
+@app.route('/location/occupancy')
+def location_occupancy():
+    # client = EnertivClient("enertiv", cred_n, cred_p, "https", "ems.enertiv.com", 443)
+    location_uuid = request.args.get('location_uuid')
+    # print "Request string: " + request.query_string
+    url = "http://%s/api/location/%s/occupancy/" % (api_url,location_uuid)
+    response = client.get(url)
+    print "\n/location/occupancy\n\t"
+    return response.text
 
 #this nifty code just makes it so routes will be queried based on what
 # the user enters in the URI if the page exists it is displayed :)
