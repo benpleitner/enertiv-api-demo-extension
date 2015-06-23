@@ -24,6 +24,26 @@
 		<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
 		<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/basic.css') }}">
     	<link rel="stylesheet" href="{{ url_for('static', filename='css/dc.css') }}">
+
+		<script type="text/javascript" src="{{ url_for('static', filename='js/jquery-ui.min.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/jquery.comiseo.daterangepicker.js') }}"></script>
+		<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/jquery-ui.min.css') }}">
+		<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/jquery.comiseo.daterangepicker.css') }}">
+	
+	    <script>
+        	$(function() { $("#e1").daterangepicker({
+     			datepickerOptions: {
+         			numberOfMonths: 2,
+				    startDate: "2015-06-01",
+				    endDate: "2015-06-23"
+			     }
+			  	// function(start, end, label) {
+			  	// 	console.log(start);
+			   //  	alert('A date range was chosen: ' + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+			  	// }
+			 })});
+    	</script>
+
 	</head>
 	<body>
 		<nav class="navbar navbar-default">
@@ -56,6 +76,9 @@
 				<div>
 					<h2>Usage for <span id="clientName"></span>: <span id="locationName"></span></h2>
 					<h3><span id="fromTime"></span> to <span id="toTime"></span></h3>
+
+					<input id="e1" name="e1">
+
 				</div>
 
               	<div id="rButton">

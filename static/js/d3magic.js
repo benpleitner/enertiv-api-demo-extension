@@ -940,6 +940,11 @@ d3Magic.generateFromURI = function (uri, client_name, location_name, current_day
 
   /*
 
+  TODO:
+  Learn grunt and bower
+  Learn git
+  Implement date range
+
   password: ilovedata
 
   */
