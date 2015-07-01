@@ -57,16 +57,6 @@ Or run the full service with your Enertiv credentials (Requires Enertiv API Regi
 
 `python app.py SERVER_NAME SERVER_PASSWORD CLIENT_ID CLIENT_SECRET`
 
-### Enertiv API Registration
-To get your credentials for the Enertiv API and see live data: [API Registration](http://bit.ly/1LMKTlm "Enertiv API Registration")
-
 ## Viewing the client
 
 Once the server is up and running simply go to `http://localhost:11999` in your browser.
-
-## Screenshot
-
-![Enertiv API Demo Screenshot](https://bitbucket.org/enertiv/enertiv_api_demo/raw/master/static/img/sunburst.png "Enertiv API Demo")
-
-## Inspiration
-This D3 code was inspired by a couple of fantastic examples: `http://www.jasondavies.com/coffee-wheel/` and `http://bl.ocks.org/kerryrodden/477c1bfb081b783f80ad`
