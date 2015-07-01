@@ -75,7 +75,7 @@ d3Magic.generateFromOccupancyURI = function (uri) {
   });
 }
 
-d3Magic.generateFromURI = function (uri, client_name, location_name, current_day) {
+d3Magic.generateFromURI = function (uri, client_name, location_name) {
   d3.json(uri, function(error, rawData) {
 
     //Totals
@@ -249,6 +249,9 @@ d3Magic.generateFromURI = function (uri, client_name, location_name, current_day
       }); 
     });
     
+    //Watcher for the width of the page
+    var width = document.getElementById("frame").offsetWidth;
+
     //Variables for writing to html
     var sumCost = 0,
         sumKw = 0,
@@ -321,9 +324,9 @@ d3Magic.generateFromURI = function (uri, client_name, location_name, current_day
     //Bar Chart - rooms
     barChart = dc.barChart("#roomBarChart");
     
-    barChart.width(800 * 0.75)
-          .height(350 * 0.75)
-          .margins({top: 10, right: 50, bottom: 30, left: 40})
+    barChart.width(width / 2)
+          .height(0.4775 * (width / 2))
+          .margins({top: 10, right: 40, bottom: 30, left: 40})
           .dimension(rooms)
           .group(kWOccupiedData, "Working hours")
           .stack(kWSemiData)
@@ -356,9 +359,9 @@ d3Magic.generateFromURI = function (uri, client_name, location_name, current_day
     //Bar Chart - equipment
     barChartE = dc.barChart("#equipBarChart");
     
-    barChartE.width(800 * 0.75)
-          .height(350 * 0.75)
-          .margins({top: 10, right: 50, bottom: 30, left: 40})
+    barChartE.width(width / 2)
+          .height(0.4775 * (width / 2))
+          .margins({top: 10, right: 40, bottom: 30, left: 40})
           .dimension(roomsE)
           .group(kWEOccupiedData)
           .stack(kWESemiData)
@@ -391,9 +394,9 @@ d3Magic.generateFromURI = function (uri, client_name, location_name, current_day
     //Row Chart - Days of the week
     rowChart = dc.rowChart("#dayRowChart");
 
-    rowChart.width(800 * 0.75)
-          .height(350 * 0.75)
-          .margins({top: 10, right: 50, bottom: 30, left: 40})
+    rowChart.width(width / 2)
+          .height(0.4775 * (width / 2))
+          .margins({top: 10, right: 40, bottom: 30, left: 40})
           .dimension(daysOfWeek)
           .group(kW2)
           .colors(d3.scale.ordinal().domain(["weekday", "weekend"]).range(["#00a1e5", "#00a1e5"]))
@@ -471,11 +474,12 @@ d3Magic.generateFromURI = function (uri, client_name, location_name, current_day
     //Pie Chart - different types of hours
     pieChart1 = dc.pieChart("#occupancyPieChart");
     
-    pieChart1.width(800 * 0.75)
-        .height(350 * 0.75)
+    pieChart1.width(width / 2)
+        .height(width / 4.5)
         .dimension(occupied)
         .group(kWOccupied)
-        .innerRadius(80)
+        .innerRadius(width / 16)
+        .radius(width / 10)
         .colors(d3.scale.ordinal().domain(["occupied", "semi", "offHours"]).range(["#0b50c2", "#0092cc", "#00b4b5"]))
         .colorAccessor(function(d) {
           if (d.key == 1) {
@@ -500,11 +504,13 @@ d3Magic.generateFromURI = function (uri, client_name, location_name, current_day
     //Bar Chart - Hours of the week
     barChart2 = dc.barChart("#hourRowChart");
     
-    barChart2.width(1100)
+    barChart2.width(width)
           .height(200)
           .margins({top: 10, right: 50, bottom: 30, left: 40})
           .dimension(hour)
           .group(kWHour)
+          .round(function(n) { return Math.floor(n) + 0.5 })
+          .alwaysUseRounding(true)
           .elasticY(true)
           .centerBar(true)
           .gap(1)
@@ -543,9 +549,11 @@ d3Magic.generateFromURI = function (uri, client_name, location_name, current_day
               makeSlider(selectedKw, ratio);
               if ((selectedKw / totalKWSum * 100).toFixed(2) != 100) {
                 selectedCostText = "Selected cost: $" + (selectedKw / ratio).toFixed(2) + ",";
+                // selectedCostText = "$" + (selectedKw / ratio).toFixed(2);
                 document.getElementById("summaryText1").innerHTML = selectedCostText;
 
                 selectedKWText = "Selected usage: " + selectedKw.toFixed(2) + " kWh" + " (" + (selectedKw / totalKWSum * 100).toFixed(2) + "%)";
+                // selectedKWText = selectedKw.toFixed(2) + " kWh" + " (" + (selectedKw / totalKWSum * 100).toFixed(2) + "%)";
                 document.getElementById("summaryText2").innerHTML = selectedKWText;
               } else {
                 document.getElementById("summaryText1").innerHTML = "Nothing selected";
@@ -589,7 +597,7 @@ d3Magic.generateFromURI = function (uri, client_name, location_name, current_day
       return [minHeat, maxHeat];
     };
 
-    heatmapChart.width(12 * 80 + 80)
+    heatmapChart.width(width)
             .height(27 * 10 + 40)
             .dimension(hoursDaysHeatmap)
             .group(kWHeatmap)
@@ -623,6 +631,63 @@ d3Magic.generateFromURI = function (uri, client_name, location_name, current_day
 
     heatmapChart.xBorderRadius(0);
     heatmapChart.yBorderRadius(0);
+
+    //Heatmap -- Key
+    var rangeHeat = maxHeat - minHeat;
+    var heatArr = [];
+    for (var h = 0; h < 24; h++) {
+      heatArr.push({
+        val: minHeat + h / 23 * rangeHeat,
+        index: h
+      });
+    }
+
+    var ndx1 = crossfilter(heatArr);
+
+    var keyHeatmap = ndx1.dimension(function(d) {
+      return [d.index, 1];
+    });
+
+    var keyHeatmapGroup = keyHeatmap.group().reduceSum(function(d) {
+      return d.val;
+    });
+
+    var heatmapChart1 = dc.heatMap("#heatmapKey");
+
+    var heatColorMapping1 = function(d) {
+      if (d < 0.1) {
+        return d3.scale.linear().domain([0, 0]).range(["rgba(235, 234, 237, 0.1)", "rgba(235, 234, 237, 0.1)"])(d); //#bbbabb #ccc
+      }
+      else {
+        return d3.scale.linear().domain([minHeat, maxHeat]).range(["blue", "red"])(d);
+      }
+    };
+
+    heatColorMapping1.domain = function() {
+      return [minHeat, maxHeat];
+    };
+
+    heatmapChart1.width(width)
+            .height(80)
+            .dimension(keyHeatmap)
+            .group(keyHeatmapGroup)
+            .colorAccessor(function(d) {
+              return d.value;
+            })
+            .keyAccessor(function(d) { return d.key[0]; })
+            .valueAccessor(function(d) { return d.key[1]; })
+            .colsLabel(function(d){
+              return heatArr[d].val.toFixed(0);
+            })
+            .rowsLabel(function(d) {
+              return "Key";
+            })
+            .transitionDuration(0)
+            .colors(heatColorMapping1)
+            .calculateColorDomain();
+
+    heatmapChart1.xBorderRadius(0);
+    heatmapChart1.yBorderRadius(0);
 
     /* Data table */
     dataTable1 = dc.dataTable("#a")
@@ -754,9 +819,9 @@ d3Magic.generateFromURI = function (uri, client_name, location_name, current_day
     occupancyArray[2] = "Working hours";
 
     //Pie Chart - types of hours calculations
-    pieChart1 = dc.pieChart("#bc4");
+    pieChart14 = dc.pieChart("#bc4");
     
-    pieChart1.width(800 * 0.75)
+    pieChart14.width(800 * 0.75)
         .height(350 * 0.75)
         .dimension(occupiedC)
         .group(occupiedCG)
@@ -833,10 +898,10 @@ d3Magic.generateFromURI = function (uri, client_name, location_name, current_day
       for (var i = 0; i < arrayForOccupancy.length; i++) {
         if (day == arrayForOccupancy[i].day) {
           if (hour >= arrayForOccupancy[i].workingStart && hour < arrayForOccupancy[i].workingEnd) {
-            return 1
+            return 1;
           }
           else if (hour >= arrayForOccupancy[i].semiStart && hour < arrayForOccupancy[i].semiEnd) {
-            return 0.5
+            return 0.5;
           }
           else {
             return 0;
@@ -934,6 +999,39 @@ d3Magic.generateFromURI = function (uri, client_name, location_name, current_day
     function makeSlider (selected, ratio) {
       // makeSliders.slide(selected, ratio);
     };
+
+    window.onresize = function(event) {
+      var newWidth = document.getElementById("frame").offsetWidth;
+      heatmapChart.width(newWidth)
+        .transitionDuration(0);
+      heatmapChart1.width(newWidth)
+        .transitionDuration(0);
+      barChart2.width(newWidth)
+        .transitionDuration(0);
+      barChart.width(newWidth / 2)
+        .height(0.4775 * (newWidth / 2))
+        .transitionDuration(0);
+      barChartE.width(newWidth / 2)
+        .height(0.4775 * (newWidth / 2))
+        .transitionDuration(0);
+      rowChart.width(newWidth / 2)
+        .height(0.4775 * (newWidth / 2))
+        .transitionDuration(0);
+      pieChart1.width(newWidth / 2)
+        .height(newWidth / 4.5)
+        .innerRadius(newWidth / 16)
+        .radius(newWidth / 10)
+        .transitionDuration(0);
+       dc.renderAll();
+        heatmapChart.transitionDuration(0);
+        heatmapChart1.transitionDuration(750);
+        barChart2.transitionDuration(750);
+        barChart.transitionDuration(750);
+        barChartE.transitionDuration(750);
+        rowChart.transitionDuration(750);
+        pieChart1.transitionDuration(750);
+    };
+  
   });
 
   dc.renderAll();
@@ -941,9 +1039,6 @@ d3Magic.generateFromURI = function (uri, client_name, location_name, current_day
   /*
 
   TODO:
-  Learn grunt and bower
-  Learn git
-  Implement date range
 
   password: ilovedata
 

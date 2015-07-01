@@ -14,6 +14,7 @@
 		<script type="text/javascript" src="{{ url_for('static', filename='js/moment.js') }}"></script>
     	<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
 	 	<script src="http://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.0-rc2/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/jquery.quickfit.js') }}"></script>
 
 	 	<script src="http://cdn.datatables.net/1.10.7/js/jquery.dataTables.min.js"></script>
 	 	<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
@@ -22,60 +23,65 @@
 		<link href='http://fonts.googleapis.com/css?family=Actor' rel='stylesheet' type='text/css'>
 		<link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
 		<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
-		<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/basic.css') }}">
     	<link rel="stylesheet" href="{{ url_for('static', filename='css/dc.css') }}">
+		<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/basic.css') }}">
 
 		<script type="text/javascript" src="{{ url_for('static', filename='js/jquery-ui.min.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/jquery.comiseo.daterangepicker.js') }}"></script>
-		<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/jquery-ui.min.css') }}">
+		<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/jquery-ui.css') }}">
 		<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/jquery.comiseo.daterangepicker.css') }}">
-	
-	    <script>
-        	$(function() { $("#e1").daterangepicker({
-     			datepickerOptions: {
-         			numberOfMonths: 2,
-				    startDate: "2015-06-01",
-				    endDate: "2015-06-23"
-			     }
-			  	// function(start, end, label) {
-			  	// 	console.log(start);
-			   //  	alert('A date range was chosen: ' + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
-			  	// }
-			 })});
-    	</script>
-
 	</head>
 	<body>
+
 		<nav class="navbar navbar-default">
-		  <div class="container-fluid">
-		    <!-- Brand and toggle get grouped for better mobile display -->
-		    <div class="navbar-header">
-				<a class="navbar-brand" href="http://www.enertiv.com">
- 					<img src="/static/img/enertiv-logo.png" style="margin-top: -2px;" width="76" height="24"/>
- 				</a>
-		    </div>
-		    <!-- Collect the nav links, forms, and other content for toggling -->
-		    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-		      <ul class="nav navbar-nav">
-			      <li class="dropdown">
-		          <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="clientDrop" role="button" aria-expanded="false">Change Client<span class="caret"></span></a>
-		          <ul class="dropdown-menu nav-drop" id="client-dropdown" role="menu">
-		          </ul>
-		        </li>
-		        <li class="dropdown">
-			          <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="locationDrop" role="button" aria-expanded="false">Change Location<span class="caret"></span></a>
-			          <ul class="dropdown-menu nav-drop" id="location-dropdown" role="menu">
-			          </ul>
-			        </li>
-		      </ul>
-		    </div><!-- /.navbar-collapse -->
-		  </div><!-- /.container-fluid -->
+		  	<div class="container-fluid">
+		    	<div class="navbar-header">
+		      		<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+				        <span class="sr-only">Toggle navigation</span>
+				        <span class="icon-bar"></span>
+				        <span class="icon-bar"></span>
+				        <span class="icon-bar"></span>
+			      	</button>
+			     	<a class="navbar-brand" href="#">
+			      		<img src="/static/img/enertiv-logo.png" style="margin-top: -2px;" width="76" height="24"/>
+			      	</a>
+		    	</div>
+
+			    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+			      	<ul class="nav navbar-nav">
+				    	<li class="dropdown">
+			          		<a href="#" class="dropdown-toggle" data-toggle="dropdown" id="clientDrop" role="button" aria-expanded="false">Change Client<span class="caret"></span></a>
+					        <ul class="dropdown-menu nav-drop" id="client-dropdown" role="menu">
+					        </ul>
+			        	</li>
+			        	<li class="dropdown">
+			          		<a href="#" class="dropdown-toggle" data-toggle="dropdown" id="locationDrop" role="button" aria-expanded="false">Change Location<span class="caret"></span></a>
+					        <ul class="dropdown-menu nav-drop" id="location-dropdown" role="menu">
+					        </ul>
+				   	 	</li>
+			      	</ul>
+			    </div>
+			</div>
 		</nav>
+
+		<ul class="list-group" id="filtered">
+		    <h5 id="filteredText">What you have filtered</h5>
+			<li class="list-group-item"><span id="sublocationNav"></span></li>
+			<li class="list-group-item"><span id="equipmentNav"></span></li>
+			<li class="list-group-item"><span id="dayNav"></span></li>
+			<li class="list-group-item"><span id="hourTypeNav"></span></li>
+
+			<!-- <h5 id="filteredText">Selected Cost</h5>
+			<li class="list-group-item"><span id="summaryText1"></span></li>
+			<h5 id="filteredText">Selected Usage</h5>
+			<li class="list-group-item"><span id="summaryText2"></span></li> -->
+		</ul>
+
 		<div class="container">
 			<div class="well center" >
 				<div>
 					<h2>Usage for <span id="clientName"></span>: <span id="locationName"></span></h2>
-					<h3><span id="fromTime"></span> to <span id="toTime"></span></h3>
+					<h3><span id="fromTime"></span><span id="toTime"></span></h3>
 
 					<input id="e1" name="e1">
 
@@ -95,16 +101,15 @@
               		<span id="summaryText2"></span>
               	</div>
 
-				<div id="stats">
-	              	<h4>What you're looking at</h4>
+				<!-- <div id="stats">
+	              	<h4>What you have filtered</h4>
 	              	<div class="btn-group btn-breadcrumb" id="navigationText">
 		  	            <a href="#" class="btn btn-default" id="sublocationNav"></a>
 			            <a href="#" class="btn btn-default" id="equipmentNav"></a>
 			            <a href="#" class="btn btn-default" id="dayNav"></a>
-			            <!-- <a href="#" class="btn btn-default" id="hourNav">a</a> -->
 			            <a href="#" class="btn btn-default" id="hourTypeNav"></a>
 	              	</div>
-              	</div>
+              	</div> -->
 
               	<div id="legend">
 	              	<svg width="20" height="20">
@@ -133,7 +138,7 @@
 				
 				<div class="sameLine">
 					<div id="occupancyPieChart">
-						<h4>Type of hour</h4>
+						<h4 id="typeOfHour">Type of hour</h4>
 					</div>
 
 					<div id="dayRowChart">
@@ -145,7 +150,7 @@
 						<h4>Usage by time of the day</h4>
 				</div>
 
-				<h3>Heat map</h3>
+				<h4>Heat map</h4>
 
 				<div id="calculations"></div>
 				<div id="bc1"></div>
@@ -153,7 +158,10 @@
 				<div id="bc3"></div>
 				<div id="bc4"></div>
 
-				<div id="heatmap">
+				<div id="heatmap"></div>
+
+				<div id="noHover">
+					<div id="heatmapKey"></div>
 				</div>
 
 				<table id="a" width="100%">
@@ -185,6 +193,11 @@
 					<h3>Directions</h3>
 					<!-- <p>Put directions text here</p> -->
 				</div>
+
+				<iframe id="frame"></iframe>
+
+ 				<!-- <iframe src="iframe.html" class="iframe"></iframe> -->
+
 			</div>
 		<script type="text/javascript" data-toggle="tooltip" title="hats" src="{{ url_for('static', filename='js/demo.js') }}"></script>
 	  </div>

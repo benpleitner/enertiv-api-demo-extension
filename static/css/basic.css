@@ -39,16 +39,16 @@ path {
 .well {
   background: rgb(0,0,0);
   background: rgba(250, 250, 250, 0.9);
--moz-border-radius: 25px 10px / 10px 25px;
-border-radius: 25px 10px / 10px 25px;
+  -moz-border-radius: 25px 10px / 10px 25px;
+  border-radius: 25px 10px / 10px 25px;
 }
 
 .fade {
-   opacity: 1;
-   transition: opacity .25s ease-in-out;
-   -moz-transition: opacity .25s ease-in-out;
-   -webkit-transition: opacity .25s ease-in-out;
-   }
+  opacity: 1;
+  transition: opacity .25s ease-in-out;
+  -moz-transition: opacity .25s ease-in-out;
+  -webkit-transition: opacity .25s ease-in-out;
+}
 
 .fade:hover {
   opacity: 0.5;
@@ -60,41 +60,6 @@ border-radius: 25px 10px / 10px 25px;
 
 .big {
   font-size: 24px; 
-}
-
-.d3-tip {
-  line-height: 1;
-  font-weight: bold;
-  padding: 12px;
-  background: #fff;
-  color: #555;
-  /*border-radius: 2px;*/
-  -moz-box-shadow: 0 0 5px #888;
-  -webkit-box-shadow: 0 0 5px#888;
-  box-shadow: 0 0 5px #888;
-  -moz-border-radius: 10px 10px / 10px 10px;
-  border-radius: 10px 10px / 10px 10px;
-}
-
-/* Creates a small triangle extender for the tooltip */
-.d3-tip:after {
-  box-sizing: border-box;
-  display: inline;
-  font-size: 10px;
-  width: 100%;
-  line-height: 1;
-  color: #fff;
-  content: "\25BC";
-  position: absolute;
-  text-align: center;
-  text-shadow: #888 0.1em 0.1em 0.2em;
-}
-
-/* Style northward tooltips differently */
-.d3-tip.n:after {
-  margin: -1px 0 0 0;
-  top: 100%;
-  left: 0;
 }
 
 nav.navbar {
@@ -137,7 +102,7 @@ nav.navbar {
   padding: 6px 12px;
   margin-bottom: 0;
   font-size: 14px;
-  font-weight: 400;
+  font-weight: 300;
   line-height: 1.42857143;
   text-align: center;
   white-space: nowrap;
@@ -241,12 +206,6 @@ nav.navbar {
 }
 
 /* Slider */
-body {
-  background-color: #393939;
-  font-size: 14px;
-  font-family: 'Raleway', sans-serif;
-}
-
 a {
   color: #4FDEF2;
 }
@@ -369,28 +328,68 @@ svg {
   padding-bottom: 10px;
 }
 
-#heatmap {
-  padding-bottom: 50px;
+#heatmapKey {
+  padding-bottom: 80px;
 }
 
-/*#roomBarChart {
-  margin-left: -10px;
-  border: 1px solid #555;
+h4 {
+  margin-bottom: -10px;
 }
 
-#equipBarChart {
-  margin-right: -10px;
-  border: 1px solid #555;
-  border-left: none;
+#stats h4 {
+  margin-bottom: 10px;
 }
 
-#occupancyPieChart {
-  margin-left: -10px;
-  border: 1px solid #555;
+#navigationText a {
+  font-size: 0.9vw;
 }
 
-#dayRowChart {
-  margin-right: -10px;
-  border: 1px solid #555;
-  border-left: none;
-}*/
+#typeOfHour {
+  margin-left: 0px;
+}
+
+#hourRowChart {
+  padding-top: 20px;
+  padding-bottom: 80px;
+}
+
+/* iframe */
+iframe {
+  width: 100%;
+  height: 1px;
+  border: none;
+}
+
+#filtered {
+  width: 10.5%;
+  position: fixed;
+}
+
+#selectedMenu {
+  width: 10.5%;
+  position: fixed;
+  margin-top: 250px;
+}
+
+#filteredText {
+  text-align: center;
+}
+
+.list-group-item {
+  background-color: rgba(250, 250, 250, 0.9);
+  border: none;
+  z-index: -1;
+  border-radius: 0px;
+}
+
+@media (min-width: 1441px) {
+  #navigationText a {
+    font-size: 0.65vw;
+  }
+}
+
+@media (max-width: 1439px) {
+  .list-group {
+    display: none;
+  }
+}

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.png') }}">
+    <script type="text/javascript" src="{{ url_for('static', filename='js/d3.v3.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/crossfilter.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/dc.js') }}"></script> 
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/moment.js') }}"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.0-rc2/js/bootstrap.min.js"></script>
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/iframe.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dc.css') }}">
+  </head>
+  <body>
+    <!-- <div id="exampleChart"></div> -->
+    <div id="heatmap"></div>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/iframe.js') }}"></script>
+  </body>
+</html>

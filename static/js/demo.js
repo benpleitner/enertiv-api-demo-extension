@@ -19,7 +19,6 @@ d3.json("/client", function (clients) {    // Make an AJAX request to pull the l
 	postLocation(client_data);
 })
 
-
 console.log("Carry that information to access the location level metadata");
 function postLocation(client_data){
 	var client_uuid = client_data.uuid;			// capture the client uuid
@@ -36,26 +35,25 @@ function postLocation(client_data){
 	});
 }
 
-
 console.log("Finally pass that information to the location metadata query to retrieve that data and display the visualization")
 function generateSun(location_data) {
 	var start = moment(),
 		location_name = location_data["name"],
 		location_uuid = location_data["uuid"],
 		deagg_uri = generateURI(location_uuid),
-		occupancy_uri = generateOccupancyURI(location_uuid)
-		current_day = moment(start).format("d");
+		occupancy_uri = generateOccupancyURI(location_uuid);
 
+	setGlobalLocationU(location_uuid);
+	setGLName(location_name);
+	setGOUri(occupancy_uri);
 			// ,
 			// agg_uri = "/location/data?location_uuid=" + location_uuid + "&q_string=fromTime%3D" + fromTime +"%26toTime%3D" + toTime +"%26interval%3D" + interval +"%26aggregate%3dtrue%26data_format%3Drickshaw"
 			;
 	// console.log(deagg_uri);
 	d3.selectAll("#locationName").text(location_name)  // Set the location name dynamically
 	d3Magic.generateFromOccupancyURI(occupancy_uri);
-	d3Magic.generateFromURI(deagg_uri, client_name, location_name, current_day);
+	d3Magic.generateFromURI(deagg_uri, client_name, location_name);
 }
-
-
 
 var today = moment(),
 	weekAgo = today - 7*24*60*60*1000,
@@ -67,10 +65,27 @@ var today = moment(),
 	client_data_obj = {},
 	location_data_obj = {};
 
+var globalLocationU;
+function setGlobalLocationU (location_uuid) {
+	globalLocationU = location_uuid;
+	return;
+}
+
+var gLName;
+function setGLName (location_name) {
+	gLName = location_name;
+	return;
+}
+
+var gOUri;
+function setGOUri (occupancy_uri) {
+	gOUri = occupancy_uri;
+	return;
+}
+
 function readableDate(dateString){
 	return moment(dateString).format('MMMM Do YYYY')
 }
-
 
 function generateURI(location_uuid){
 	return "/location/data?location_uuid=" + location_uuid + "&q_string=fromTime%3D" + fromTime +"%26toTime%3D" + toTime +"%26interval%3D" + interval +"%26aggregate%3dfalse%26data_format%3Drickshaw";
@@ -80,8 +95,7 @@ function generateOccupancyURI(location_uuid) {
 	return "/location/occupancy?location_uuid=" + location_uuid;
 }
 
-
-d3.select("#fromTime").text(readableDate(fromTime));
+d3.select("#fromTime").text(readableDate(fromTime) + " to ");
 d3.select("#toTime").text(readableDate(toTime));
 
 
@@ -135,3 +149,26 @@ $(document.body).on( 'click', '#location-dropdown li', function( event ) {
 		generateSun(update_location);
 	return false;
 });
+
+$(function() { $("#e1").daterangepicker({
+	datepickerOptions: {
+		numberOfMonths: 2,
+     },
+     onChange: function() {
+     	var range = $("#e1").daterangepicker("getRange");
+     	var today = moment(today).format("YYYY-MM-DD");
+		var endArr = ("" + range.end).split(" ");
+		var endDate = endArr[0] + " " + endArr[1] + " " + (range.end.getDate() + 1) + " " + endArr[3] + " " + endArr[4] + " " + endArr[5] + " " + endArr[6];
+     	var start = moment(range.start).format("YYYY-MM-DD 04:00:00") + "Z";
+     	var end = moment(endDate).format("YYYY-MM-DD 04:00:00") + "Z";
+     	var uri = "/location/data?location_uuid=" + globalLocationU + "&q_string=fromTime%3D" + start +"%26toTime%3D" + end +"%26interval%3D" + interval +"%26aggregate%3dfalse%26data_format%3Drickshaw";
+
+     	fromTime = start;
+     	toTime = end;
+
+		d3.select("#fromTime").text("");
+		d3.select("#toTime").text("");
+		// d3Magic.generateFromOccupancyURI(gOUri);
+		d3Magic.generateFromURI(uri, client_name, gLName);
+     }
+})});

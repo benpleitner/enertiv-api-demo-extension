@@ -40,6 +40,10 @@ api_url = "ems.enertiv.com"
 def index():
     return render_template('index.html')
 
+@app.route('/iframe.html')
+def iframe():
+    return render_template('iframe.html')
+
 
 @app.route('/client')
 def client_info():
