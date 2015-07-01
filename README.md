@@ -23,7 +23,7 @@ Run this code in your terminal or command prompt to get the environment ready.
 
 
 ```bash
-git clone git@bitbucket.org:enertiv/enertiv_api_demo.git
+git clone https://github.com/benpleitner/myProject.git
 cd enertiv_api_demo
 
 # If not already present install virtualenv and virtualenvwrapper on your system: Full instructions - http://virtualenvwrapper.readthedocs.org/en/latest/
