@@ -1,11 +1,3 @@
-# Enertiv API Demo
-
-The Enertiv Platform makes energy usage data 100% transparent in buildings. Our API lets you traverse the building hierarchy, from portfolio, to individual buildings, to sub-locations within a building, such as rooms and floors, to individual pieces of equipment, such as lights and air conditioners. Customized groups of equipment can also be tracked and managed with the API. The API also supports relevant metadata such as weather, occupancy, square footage, etc. for buildings monitored.
-
-We want to help our users build and enhance products using our energy data. As a result, we have opened up our powerful API and open-sourced this demo to allow you to develop your own creative solutions.
-
-Further [reading](http://www.enertiv.com/api-docs/ "Enertiv API Docs")
-
 ## Requirements
 The Enertiv API Demo is written using Python for the server-side components and JavaScript for the client-side example. The sample leverages the following components:
 
@@ -57,6 +49,6 @@ Or run the full service with your Enertiv credentials (Requires Enertiv API Regi
 
 `python app.py SERVER_NAME SERVER_PASSWORD CLIENT_ID CLIENT_SECRET`
 
-## Viewing the client
+## Viewing the project
 
 Once the server is up and running simply go to `http://localhost:11999` in your browser.
