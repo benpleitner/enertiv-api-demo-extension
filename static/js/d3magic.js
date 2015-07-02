@@ -1001,35 +1001,68 @@ d3Magic.generateFromURI = function (uri, client_name, location_name) {
     };
 
     window.onresize = function(event) {
-      var newWidth = document.getElementById("frame").offsetWidth;
-      heatmapChart.width(newWidth)
-        .transitionDuration(0);
-      heatmapChart1.width(newWidth)
-        .transitionDuration(0);
-      barChart2.width(newWidth)
-        .transitionDuration(0);
-      barChart.width(newWidth / 2)
-        .height(0.4775 * (newWidth / 2))
-        .transitionDuration(0);
-      barChartE.width(newWidth / 2)
-        .height(0.4775 * (newWidth / 2))
-        .transitionDuration(0);
-      rowChart.width(newWidth / 2)
-        .height(0.4775 * (newWidth / 2))
-        .transitionDuration(0);
-      pieChart1.width(newWidth / 2)
-        .height(newWidth / 4.5)
-        .innerRadius(newWidth / 16)
-        .radius(newWidth / 10)
-        .transitionDuration(0);
-       dc.renderAll();
-        heatmapChart.transitionDuration(0);
-        heatmapChart1.transitionDuration(750);
-        barChart2.transitionDuration(750);
-        barChart.transitionDuration(750);
-        barChartE.transitionDuration(750);
-        rowChart.transitionDuration(750);
-        pieChart1.transitionDuration(750);
+      if ( $(window).width() > 992) {      
+        var newWidth = document.getElementById("frame").offsetWidth;
+        heatmapChart.width(newWidth)
+          .transitionDuration(0);
+        heatmapChart1.width(newWidth)
+          .transitionDuration(0);
+        barChart2.width(newWidth)
+          .transitionDuration(0);
+        barChart.width(newWidth / 2)
+          .height(0.4775 * (newWidth / 2))
+          .transitionDuration(0);
+        barChartE.width(newWidth / 2)
+          .height(0.4775 * (newWidth / 2))
+          .transitionDuration(0);
+        rowChart.width(newWidth / 2)
+          .height(0.4775 * (newWidth / 2))
+          .transitionDuration(0);
+        pieChart1.width(newWidth / 2)
+          .height(newWidth / 4.5)
+          .innerRadius(newWidth / 16)
+          .radius(newWidth / 10)
+          .transitionDuration(0);
+         dc.renderAll();
+          heatmapChart.transitionDuration(0);
+          heatmapChart1.transitionDuration(750);
+          barChart2.transitionDuration(750);
+          barChart.transitionDuration(750);
+          barChartE.transitionDuration(750);
+          rowChart.transitionDuration(750);
+          pieChart1.transitionDuration(750);
+      }
+      else {
+        var newWidth = document.getElementById("frame").offsetWidth;
+        heatmapChart.width(newWidth)
+          .transitionDuration(0);
+        heatmapChart1.width(newWidth)
+          .transitionDuration(0);
+        barChart2.width(newWidth)
+          .transitionDuration(0);
+        barChart.width(newWidth)
+          .height(0.4775 * (newWidth))
+          .transitionDuration(0);
+        barChartE.width(newWidth)
+          .height(0.4775 * (newWidth))
+          .transitionDuration(0);
+        rowChart.width(newWidth)
+          .height(0.4775 * (newWidth))
+          .transitionDuration(0);
+        pieChart1.width(newWidth)
+          .height(newWidth / 2.25)
+          .innerRadius(newWidth / 8)
+          .radius(newWidth / 5)
+          .transitionDuration(0);
+         dc.renderAll();
+          heatmapChart.transitionDuration(0);
+          heatmapChart1.transitionDuration(750);
+          barChart2.transitionDuration(750);
+          barChart.transitionDuration(750);
+          barChartE.transitionDuration(750);
+          rowChart.transitionDuration(750);
+          pieChart1.transitionDuration(750);
+      }
     };
   
   });

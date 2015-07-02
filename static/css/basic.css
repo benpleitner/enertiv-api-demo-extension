@@ -83,14 +83,16 @@ nav.navbar {
     fill-opacity: 0.6;
 }
 
-.sameLine {
-  display: flex;
-  padding-bottom: 20px;
-}
+@media (min-width: 992px) {
+  .sameLine {
+    display: flex;
+    padding-bottom: 20px;
+  }
 
-.sameLineBarChart {
-  display: flex;
-  padding-bottom: 20px;
+  .sameLineBarChart {
+    display: flex;
+    padding-bottom: 20px;
+  }
 }
 
 .dc-data-table {

@@ -337,3 +337,57 @@
         cursor: pointer;
     }
 }
+
+@media (max-width: 991px) {
+    .dc-chart .pie-slice {
+        fill: black;
+        font-size: 1.0vw;
+        cursor: pointer;
+    }
+
+    .dc-chart .axis text {
+        font: 1.0vw sans-serif;
+    }
+
+    .dc-chart g.row text {
+        fill: black;
+        font-size: 1.0vw;
+        cursor: pointer;
+    }
+}
+
+@media (max-width: 760px) {
+    .dc-chart .pie-slice {
+        fill: black;
+        font-size: 1.4vw;
+        cursor: pointer;
+    }
+
+    .dc-chart .axis text {
+        font: 1.4vw sans-serif;
+    }
+
+    .dc-chart g.row text {
+        fill: black;
+        font-size: 1.4vw;
+        cursor: pointer;
+    }
+}
+
+@media (max-width: 480px) {
+    .dc-chart .pie-slice {
+        fill: black;
+        font-size: 1.8vw;
+        cursor: pointer;
+    }
+
+    .dc-chart .axis text {
+        font: 1.8vw sans-serif;
+    }
+
+    .dc-chart g.row text {
+        fill: black;
+        font-size: 1.8vw;
+        cursor: pointer;
+    }
+}
