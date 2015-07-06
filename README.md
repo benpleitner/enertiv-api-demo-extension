@@ -1,4 +1,4 @@
-# Enertiv API Demo
+# Enertiv API Extension
 
 The Enertiv Platform makes energy usage data 100% transparent in buildings. Our API lets you traverse the building hierarchy, from portfolio, to individual buildings, to sub-locations within a building, such as rooms and floors, to individual pieces of equipment, such as lights and air conditioners. Customized groups of equipment can also be tracked and managed with the API. The API also supports relevant metadata such as weather, occupancy, square footage, etc. for buildings monitored.
 
@@ -23,7 +23,7 @@ Run this code in your terminal or command prompt to get the environment ready.
 
 
 ```bash
-git clone git@bitbucket.org:enertiv/enertiv_api_demo.git
+git clone https://github.com/benpleitner/myProject.git
 cd enertiv_api_demo
 
 # If not already present install virtualenv and virtualenvwrapper on your system: Full instructions - http://virtualenvwrapper.readthedocs.org/en/latest/
@@ -57,16 +57,6 @@ Or run the full service with your Enertiv credentials (Requires Enertiv API Regi
 
 `python app.py SERVER_NAME SERVER_PASSWORD CLIENT_ID CLIENT_SECRET`
 
-### Enertiv API Registration
-To get your credentials for the Enertiv API and see live data: [API Registration](http://bit.ly/1LMKTlm "Enertiv API Registration")
-
-## Viewing the client
+## Viewing the project
 
 Once the server is up and running simply go to `http://localhost:11999` in your browser.
-
-## Screenshot
-
-![Enertiv API Demo Screenshot](https://bitbucket.org/enertiv/enertiv_api_demo/raw/master/static/img/sunburst.png "Enertiv API Demo")
-
-## Inspiration
-This D3 code was inspired by a couple of fantastic examples: `http://www.jasondavies.com/coffee-wheel/` and `http://bl.ocks.org/kerryrodden/477c1bfb081b783f80ad`
