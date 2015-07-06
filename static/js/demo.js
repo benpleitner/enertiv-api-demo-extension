@@ -150,6 +150,7 @@ $(document.body).on( 'click', '#location-dropdown li', function( event ) {
 	return false;
 });
 
+//Get the date range for the date range picker
 $(function() { $("#e1").daterangepicker({
 	datepickerOptions: {
 		numberOfMonths: 2,

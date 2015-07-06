@@ -20,6 +20,8 @@ d3Magic.node;
         arrayForOccupancy = [],
         dayMin = 7,
         dayMax = 0;
+
+//Get the occupancy data
 d3Magic.generateFromOccupancyURI = function (uri) {
   d3.json(uri, function(error, rawData) {
     WOStart = 0;
@@ -28,6 +30,8 @@ d3Magic.generateFromOccupancyURI = function (uri) {
     PWOEnd = 0;
     dayMin = 7;
     dayMax = 0;
+
+    //Re-assign the days of the week
     rawData.forEach(function (d) {
       if (d.day_of_week == 6) {
         dayOfWeek = 0;
@@ -50,6 +54,7 @@ d3Magic.generateFromOccupancyURI = function (uri) {
         PWOStart = parseInt(d.start_time.split(":")[0]);
         PWOEnd = parseInt(d.end_time.split(":")[0]);
       }
+
       arrayForOccupancy.push({
         day: dayOfWeek,
         workingStart: WOStart,
@@ -58,13 +63,16 @@ d3Magic.generateFromOccupancyURI = function (uri) {
         semiEnd: PWOEnd
       });
     });
+
     var doubleCount = false;
     var dayRange = dayMax - dayMin + 1;
+
     arrayForOccupancy.forEach(function (d) {
       if (d.semiStart != 0) {
         doubleCount = true;
       }
     });
+
     var newArr = [];
     if (doubleCount) {
       for (var i = 1; i < dayRange + 1; i++) {
@@ -75,6 +83,7 @@ d3Magic.generateFromOccupancyURI = function (uri) {
   });
 }
 
+//Get the energy usage and cost data
 d3Magic.generateFromURI = function (uri, client_name, location_name) {
   d3.json(uri, function(error, rawData) {
 
@@ -126,6 +135,7 @@ d3Magic.generateFromURI = function (uri, client_name, location_name) {
                     });   
     }
 
+    //Special case for Eataly
     if (client_name == "Eataly") {
       var smallArray = [];
       for (var y = 0; y < forGraph.length; y++) {
@@ -162,6 +172,7 @@ d3Magic.generateFromURI = function (uri, client_name, location_name) {
     var indexing1 = 0;
     var maxIndex1= 0;
 
+    //Assign each room and equipment type an index
     rawData.forEach(function(e) {
       var roomName = e.sublocation_name;
       var equipmentName = e.equipment_type;
@@ -189,6 +200,7 @@ d3Magic.generateFromURI = function (uri, client_name, location_name) {
             output = d.y,
             cost = d.total_cost;
 
+        //Push the first piece of data into the array for dc graphs
         if (forGraphWeekdays.length == 0) {
           if ($.inArray(roomName, smallArray) == -1) {
             forGraphWeekdays.push({  room: roomName,
@@ -212,6 +224,7 @@ d3Magic.generateFromURI = function (uri, client_name, location_name) {
           }
         } else {
           for (var z = 0; z < forGraphWeekdays.length; z++) {
+            //Update values if already present in the array
             if (parseInt(d.hour.split(":")[0]) == forGraphWeekdays[z].hour && d.day == forGraphWeekdays[z].day && roomName == forGraphWeekdays[z].room &&
               equipmentName == forGraphWeekdays[z].equip) {
 
@@ -234,7 +247,9 @@ d3Magic.generateFromURI = function (uri, client_name, location_name) {
               forGraphWeekdays[z].cost += cost;
               forGraphWeekdays[z].costE += cost;
               break;
-            } else if (z == forGraphWeekdays.length - 1) {
+            }
+            //Push the rest of the data into the array for dc graphs
+            else if (z == forGraphWeekdays.length - 1) {
                 if ($.inArray(roomName, smallArray) == -1) {
                   fillInData(forGraphWeekdays, roomName, roomsForUsage, equipmentName, equipForUsage, output, d.day,
                     cost, parseInt(d.hour.split(":")[0]), arrayForOccupancy)
@@ -242,7 +257,6 @@ d3Magic.generateFromURI = function (uri, client_name, location_name) {
                 break;
             }
             else {
-
             }
           }
         }
@@ -250,7 +264,7 @@ d3Magic.generateFromURI = function (uri, client_name, location_name) {
     });
     
     //Watcher for the width of the page
-    var width = document.getElementById("frame").offsetWidth;
+    var width = document.getElementById("well").offsetWidth;
 
     //Variables for writing to html
     var sumCost = 0,
@@ -546,7 +560,6 @@ d3Magic.generateFromURI = function (uri, client_name, location_name) {
               selectedKw += p.value;
             }
             if (p.key == 23) {
-              makeSlider(selectedKw, ratio);
               if ((selectedKw / totalKWSum * 100).toFixed(2) != 100) {
                 selectedCostText = "Selected cost: $" + (selectedKw / ratio).toFixed(2) + ",";
                 // selectedCostText = "$" + (selectedKw / ratio).toFixed(2);
@@ -795,6 +808,7 @@ d3Magic.generateFromURI = function (uri, client_name, location_name) {
             }
 
             if (d.key == equipArray.length - 1) {
+              //Special case for Staples
               if (client_name == "Staples" && textForWriting.split(",").length == equipArray.length) {
                 selectedEquipText = "All equipment"
               }
@@ -813,6 +827,7 @@ d3Magic.generateFromURI = function (uri, client_name, location_name) {
           .xUnits(dc.units.ordinal)
           .transitionDuration(700);
 
+    //Array for axis and label text
     var occupancyArray = []
     occupancyArray[0] = "Off hours";
     occupancyArray[1] = "Semi-working hours";
@@ -894,7 +909,6 @@ d3Magic.generateFromURI = function (uri, client_name, location_name) {
     addXAxis(rowChart, "kWh");
 
     function occupancy (hour, day, arrayForOccupancy) {
-      // arrayForOccupancy.forEach(function (d, i) {
       for (var i = 0; i < arrayForOccupancy.length; i++) {
         if (day == arrayForOccupancy[i].day) {
           if (hour >= arrayForOccupancy[i].workingStart && hour < arrayForOccupancy[i].workingEnd) {
@@ -910,15 +924,6 @@ d3Magic.generateFromURI = function (uri, client_name, location_name) {
         else if (i == arrayForOccupancy.length - 1) {
           return 0;
         }
-      }
-    }
-
-    function weekday (day) {
-      if (day != 0 && day != 6) {
-        return 1;
-      }
-      else {
-        return 0;
       }
     }
 
@@ -996,13 +1001,10 @@ d3Magic.generateFromURI = function (uri, client_name, location_name) {
       }
     }
 
-    function makeSlider (selected, ratio) {
-      // makeSliders.slide(selected, ratio);
-    };
-
+    //Adjust the size of the graphs on resize
     window.onresize = function(event) {
       if ( $(window).width() > 992) {      
-        var newWidth = document.getElementById("frame").offsetWidth;
+        var newWidth = document.getElementById("well").offsetWidth;
         heatmapChart.width(newWidth)
           .transitionDuration(0);
         heatmapChart1.width(newWidth)
@@ -1033,7 +1035,7 @@ d3Magic.generateFromURI = function (uri, client_name, location_name) {
           pieChart1.transitionDuration(750);
       }
       else {
-        var newWidth = document.getElementById("frame").offsetWidth;
+        var newWidth = document.getElementById("well").offsetWidth;
         heatmapChart.width(newWidth)
           .transitionDuration(0);
         heatmapChart1.width(newWidth)
@@ -1064,16 +1066,7 @@ d3Magic.generateFromURI = function (uri, client_name, location_name) {
           pieChart1.transitionDuration(750);
       }
     };
-  
   });
 
   dc.renderAll();
-
-  /*
-
-  TODO:
-
-  password: ilovedata
-
-  */
 };
