@@ -95,9 +95,6 @@ nav.navbar {
   }
 }
 
-.dc-data-table {
-}
-
 /* Button */
 .btn-geckoboard {
   display: inline-block;
@@ -223,24 +220,6 @@ a {
   stroke: gray;
   stroke-width: 4px;
   stroke-linecap: round;
-}
-
-.slider .handle path {
-  stroke: #2eb9ea;
-  stroke-width: 3px;
-  stroke-linecap: round;
-  pointer-events: none;
-}
-
-.slider .handle text {
-  fill: #2eb9ea;
-  text-align: center;
-  font-size: 18px;
-}
-
-.sliderText {
-  padding-top: 20px;
-  margin-bottom: -50px;
 }
 
 /* Data table */
@@ -396,75 +375,10 @@ iframe {
   }
 }
 
-/* dc.js changes */
-@media (min-width: 1441px) {
-    .dc-chart .pie-slice {
-        fill: black;
-        font-size: 0.65vw;
-        cursor: pointer;
-    }
-
-    .dc-chart .axis text {
-        font: 0.4vw sans-serif;
-    }
-
-    .dc-chart g.row text {
-        fill: black;
-        font-size: 0.65vw;
-        cursor: pointer;
-    }
+.dc-chart .heatmap .box-group.selected rect:hover, .dc-chart .heatmap .box-group rect:hover {
+    fill-opacity: 0.6;
 }
 
-@media (max-width: 991px) {
-    .dc-chart .pie-slice {
-        fill: black;
-        font-size: 1.0vw;
-        cursor: pointer;
-    }
-
-    .dc-chart .axis text {
-        font: 1.0vw sans-serif;
-    }
-
-    .dc-chart g.row text {
-        fill: black;
-        font-size: 1.0vw;
-        cursor: pointer;
-    }
-}
-
-@media (max-width: 760px) {
-    .dc-chart .pie-slice {
-        fill: black;
-        font-size: 1.4vw;
-        cursor: pointer;
-    }
-
-    .dc-chart .axis text {
-        font: 1.4vw sans-serif;
-    }
-
-    .dc-chart g.row text {
-        fill: black;
-        font-size: 1.4vw;
-        cursor: pointer;
-    }
-}
-
-@media (max-width: 480px) {
-    .dc-chart .pie-slice {
-        fill: black;
-        font-size: 1.8vw;
-        cursor: pointer;
-    }
-
-    .dc-chart .axis text {
-        font: 1.8vw sans-serif;
-    }
-
-    .dc-chart g.row text {
-        fill: black;
-        font-size: 1.8vw;
-        cursor: pointer;
-    }
+#noHover .dc-chart .heatmap .box-group.selected rect:hover, #noHover .dc-chart .heatmap .box-group rect:hover {
+    fill-opacity: 1;
 }

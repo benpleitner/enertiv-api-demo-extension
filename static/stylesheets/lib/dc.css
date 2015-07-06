@@ -1,3 +1,7 @@
+div.dc-chart {
+    float: left;
+}
+
 .dc-chart rect.bar {
     stroke: none;
     cursor: pointer;
@@ -32,8 +36,8 @@
 }
 
 .dc-chart .pie-slice {
-    fill: black;
-    font-size: 0.9vw;
+    fill: white;
+    font-size: 12px;
     cursor: pointer;
 }
 
@@ -68,7 +72,7 @@
 }
 
 .dc-chart .axis text {
-    font: 0.65vw sans-serif;
+    font: 10px sans-serif;
 }
 
 .dc-chart .grid-line {
@@ -210,8 +214,8 @@
 }
 
 .dc-chart g.row text {
-    fill: black;
-    font-size: 0.9vw;
+    fill: white;
+    font-size: 12px;
     cursor: pointer;
 }
 
@@ -303,19 +307,11 @@
 
 .dc-chart .heatmap .box-group.deselected rect {
     stroke: none;
-    fill-opacity: 0.1;
-    fill: #ebeaed;
+    fill-opacity: .5;
+    fill: #ccc;
 }
 
 .dc-chart .heatmap g.axis text {
     pointer-events: all;
     cursor: pointer;
-}
-
-.dc-chart .heatmap .box-group.selected rect:hover, .dc-chart .heatmap .box-group rect:hover {
-    fill-opacity: 0.6;
-}
-
-#noHover .dc-chart .heatmap .box-group.selected rect:hover, #noHover .dc-chart .heatmap .box-group rect:hover {
-    fill-opacity: 1;
 }
