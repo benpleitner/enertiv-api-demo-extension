@@ -374,11 +374,3 @@ iframe {
     display: none;
   }
 }
-
-.dc-chart .heatmap .box-group.selected rect:hover, .dc-chart .heatmap .box-group rect:hover {
-    fill-opacity: 0.6;
-}
-
-#noHover .dc-chart .heatmap .box-group.selected rect:hover, #noHover .dc-chart .heatmap .box-group rect:hover {
-    fill-opacity: 1;
-}

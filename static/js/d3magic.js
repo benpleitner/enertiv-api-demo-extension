@@ -369,7 +369,12 @@ d3Magic.generateFromURI = function (uri, client_name, location_name) {
       }
       return roomArray[v];
     });
-
+    
+    if ($(window).width() <= 992) {      
+      barChart.width(width)
+            .height(0.4775 * width)
+    }
+    
     //Bar Chart - equipment
     barChartE = dc.barChart("#equipBarChart");
     
@@ -404,6 +409,11 @@ d3Magic.generateFromURI = function (uri, client_name, location_name) {
       }
       return equipArray[v];
     });
+
+    if ($(window).width() <= 992) {      
+      barChartE.width(width)
+            .height(0.4775 * width)
+    }
 
     //Row Chart - Days of the week
     rowChart = dc.rowChart("#dayRowChart");
@@ -445,6 +455,11 @@ d3Magic.generateFromURI = function (uri, client_name, location_name) {
             }
           })
           .transitionDuration(700);
+
+    if ($(window).width() <= 992) {      
+      rowChart.width(width)
+            .height(0.4775 * width)
+    }
 
     dc.renderAll();
 
@@ -514,6 +529,13 @@ d3Magic.generateFromURI = function (uri, client_name, location_name) {
           }
         })
         .transitionDuration(700);
+
+    if ($(window).width() <= 992) {      
+      pieChart1.width(width)
+                .height(width / 2.25)
+                .innerRadius(width / 8)
+                .radius(width / 5)
+    }
 
     //Bar Chart - Hours of the week
     barChart2 = dc.barChart("#hourRowChart");
