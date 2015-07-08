@@ -12,75 +12,67 @@
 }
 
 @media (min-width: 1441px) {
-  /* line 25, ../../sass/sass/screen.scss */
+  /* line 26, ../../sass/sass/screen.scss */
   .dc-chart .pie-slice {
     font-size: 0.65vw;
   }
-
-  /* line 29, ../../sass/sass/screen.scss */
+  /* line 30, ../../sass/sass/screen.scss */
   .dc-chart .axis text {
     font: 0.4vw sans-serif;
   }
-
-  /* line 33, ../../sass/sass/screen.scss */
+  /* line 34, ../../sass/sass/screen.scss */
   .dc-chart g.row text {
     font-size: 0.65vw;
   }
 }
 @media (max-width: 991px) {
-  /* line 39, ../../sass/sass/screen.scss */
+  /* line 42, ../../sass/sass/screen.scss */
   .dc-chart .pie-slice {
     font-size: 1vw;
   }
-
-  /* line 43, ../../sass/sass/screen.scss */
+  /* line 46, ../../sass/sass/screen.scss */
   .dc-chart .axis text {
     font: 1vw sans-serif;
   }
-
-  /* line 47, ../../sass/sass/screen.scss */
+  /* line 50, ../../sass/sass/screen.scss */
   .dc-chart g.row text {
     font-size: 1vw;
   }
 }
 @media (max-width: 760px) {
-  /* line 53, ../../sass/sass/screen.scss */
+  /* line 58, ../../sass/sass/screen.scss */
   .dc-chart .pie-slice {
     font-size: 1.4vw;
   }
-
-  /* line 57, ../../sass/sass/screen.scss */
+  /* line 62, ../../sass/sass/screen.scss */
   .dc-chart .axis text {
     font: 1.4vw sans-serif;
   }
-
-  /* line 61, ../../sass/sass/screen.scss */
+  /* line 66, ../../sass/sass/screen.scss */
   .dc-chart g.row text {
     font-size: 1.4vw;
   }
 }
 @media (max-width: 480px) {
-  /* line 67, ../../sass/sass/screen.scss */
+  /* line 74, ../../sass/sass/screen.scss */
   .dc-chart .pie-slice {
     font-size: 1.8vw;
   }
-
-  /* line 71, ../../sass/sass/screen.scss */
+  /* line 78, ../../sass/sass/screen.scss */
   .dc-chart .axis text {
     font: 1.8vw sans-serif;
   }
-
-  /* line 75, ../../sass/sass/screen.scss */
+  /* line 82, ../../sass/sass/screen.scss */
   .dc-chart g.row text {
     font-size: 1.8vw;
   }
 }
-/* line 84, ../../sass/sass/screen.scss */
+/* line 92, ../../sass/sass/screen.scss */
 .dc-chart .heatmap .box-group.selected rect:hover, .dc-chart .heatmap .box-group rect:hover {
   fill-opacity: 0.6;
 }
 
-/* line 88, ../../sass/sass/screen.scss */
+/* line 96, ../../sass/sass/screen.scss */
 #noHover .dc-chart .heatmap .box-group.selected rect:hover, #noHover .dc-chart .heatmap .box-group rect:hover {
   fill-opacity: 1;
 }

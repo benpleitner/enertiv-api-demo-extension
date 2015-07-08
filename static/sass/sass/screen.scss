@@ -1,90 +1,98 @@
 /* dc.js changes */
 .dc-chart .pie-slice {
-    fill: black;
-    cursor: pointer;
+  fill: black;
+  cursor: pointer;
 }
 
 .dc-chart g.row text {
-    fill: black;
-    cursor: pointer;
+  fill: black;
+  cursor: pointer;
 }
 
 @mixin pie-slice($size) {
-    font-size: $size;
+  font-size: $size;
 }
 
 @mixin axis-text($size) {
-    font: $size sans-serif;
+  font: $size sans-serif;
 }
 
 @mixin row-chart($size) {
-    font-size: $size;
+  font-size: $size;
 }
 
 @media (min-width: 1441px) {
-    .dc-chart .pie-slice {
+  .dc-chart {
+    .pie-slice {
         @include pie-slice(0.65vw);
     }
 
-    .dc-chart .axis text {
+    .axis text {
         @include axis-text(0.4vw);
     }
 
-    .dc-chart g.row text {
+    g.row text {
         @include row-chart(0.65vw);
     }
+  }
 }
 
 @media (max-width: 991px) {
-    .dc-chart .pie-slice {
+  .dc-chart {
+    .pie-slice {
         @include pie-slice(1.0vw);
     }
 
-    .dc-chart .axis text {
+    .axis text {
         @include axis-text(1.0vw);
     }
 
-    .dc-chart g.row text {
+    g.row text {
         @include row-chart(1.0vw);
     }
+  }
 }
 
 @media (max-width: 760px) {
-    .dc-chart .pie-slice {
+  .dc-chart {
+    .pie-slice {
         @include pie-slice(1.4vw);
     }
 
-    .dc-chart .axis text {
+    .axis text {
         @include axis-text(1.4vw);
     }
 
-    .dc-chart g.row text {
+    g.row text {
         @include row-chart(1.4vw);
     }
+  }
 }
 
 @media (max-width: 480px) {
-    .dc-chart .pie-slice {
+  .dc-chart {
+    .pie-slice {
         @include pie-slice(1.8vw);
     }
 
-    .dc-chart .axis text {
+    .axis text {
         @include axis-text(1.8vw);
     }
 
-    .dc-chart g.row text {
+    g.row text {
         @include row-chart(1.8vw);
     }
+  }
 }
 
 @mixin opacity($opac) {
-    fill-opacity: $opac;
+  fill-opacity: $opac;
 }
 
 .dc-chart .heatmap .box-group.selected rect:hover, .dc-chart .heatmap .box-group rect:hover {
-    @include opacity(0.6);
+  @include opacity(0.6);
 }
 
 #noHover .dc-chart .heatmap .box-group.selected rect:hover, #noHover .dc-chart .heatmap .box-group rect:hover {
-    @include opacity(1);
+  @include opacity(1);
 }
