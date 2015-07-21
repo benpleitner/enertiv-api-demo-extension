@@ -724,6 +724,27 @@ d3Magic.generateFromURI = function (uri, client_name, location_name) {
     heatmapChart1.xBorderRadius(0);
     heatmapChart1.yBorderRadius(0);
 
+    //Show less x-axis labels on the heat map if the screen is small
+    if (window.innerWidth <= 760) {
+      heatmapChart.colsLabel(function(d) {
+        if (d % 2 == 0) {
+          return moment().hour(d).format("h a");
+        }
+        else {
+          return "";
+        }
+      })
+
+      heatmapChart1.colsLabel(function(d, i) {
+        if (d % 2 == 0) {
+          return heatArr[d].val.toFixed(0);
+        }
+        else {
+          return "";
+        }
+      })
+    }
+
     /* Data table */
     dataTable1 = dc.dataTable("#a")
 
@@ -1025,7 +1046,7 @@ d3Magic.generateFromURI = function (uri, client_name, location_name) {
 
     //Adjust the size of the graphs on resize
     window.onresize = function(event) {
-      if ( $(window).width() > 992) {      
+      if ($(window).width() > 992) {      
         var newWidth = document.getElementById("well").offsetWidth;
         heatmapChart.width(newWidth)
           .transitionDuration(0);
@@ -1078,7 +1099,7 @@ d3Magic.generateFromURI = function (uri, client_name, location_name) {
           .innerRadius(newWidth / 8)
           .radius(newWidth / 5)
           .transitionDuration(0);
-         dc.renderAll();
+        dc.renderAll();
           heatmapChart.transitionDuration(0);
           heatmapChart1.transitionDuration(750);
           barChart2.transitionDuration(750);
@@ -1086,6 +1107,36 @@ d3Magic.generateFromURI = function (uri, client_name, location_name) {
           barChartE.transitionDuration(750);
           rowChart.transitionDuration(750);
           pieChart1.transitionDuration(750);
+      }
+
+      //Show less x-axis labels on the heat map if the screen is small
+      if (window.innerWidth <= 760) {
+        heatmapChart.colsLabel(function(d) {
+          if (d % 2 == 0) {
+            return moment().hour(d).format("h a");
+          }
+          else {
+            return "";
+          }
+        })
+
+        heatmapChart1.colsLabel(function(d, i) {
+          if (d % 2 == 0) {
+            return heatArr[d].val.toFixed(0);
+          }
+          else {
+            return "";
+          }
+        })
+      }
+      else {
+        heatmapChart.colsLabel(function(d) {
+          return moment().hour(d).format("h a");
+        })
+
+        heatmapChart1.colsLabel(function(d) {
+            return heatArr[d].val.toFixed(0);
+        })
       }
     };
   });

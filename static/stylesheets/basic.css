@@ -10,6 +10,11 @@ html, body {
   background-size:  cover;
 }
 
+/* Make the border of the navbar dropdown transparent */
+.navbar-default .navbar-toggle {
+  border-color: rgba(0, 0, 0, 0)
+}
+
 a:link, a:active {
   text-decoration: none;
 }
