@@ -1120,7 +1120,7 @@ d3Magic.generateFromURI = function (uri, client_name, location_name) {
           }
         })
 
-        heatmapChart1.colsLabel(function(d, i) {
+        heatmapChart1.colsLabel(function(d) {
           if (d % 2 == 0) {
             return heatArr[d].val.toFixed(0);
           }
@@ -1135,7 +1135,7 @@ d3Magic.generateFromURI = function (uri, client_name, location_name) {
         })
 
         heatmapChart1.colsLabel(function(d) {
-            return heatArr[d].val.toFixed(0);
+          return heatArr[d].val.toFixed(0);
         })
       }
     };
