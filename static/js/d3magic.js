@@ -89,7 +89,6 @@ d3Magic.generateFromURI = function (uri, client_name, location_name) {
 
     //Totals
     var totals = {},
-        // costs = {},
         maxTotal = 0,
         forGraph = [],
         totalKWSum = 0,
@@ -584,11 +583,9 @@ d3Magic.generateFromURI = function (uri, client_name, location_name) {
             if (p.key == 23) {
               if ((selectedKw / totalKWSum * 100).toFixed(2) != 100) {
                 selectedCostText = "Selected cost: $" + (selectedKw / ratio).toFixed(2) + ",";
-                // selectedCostText = "$" + (selectedKw / ratio).toFixed(2);
                 document.getElementById("summaryText1").innerHTML = selectedCostText;
 
                 selectedKWText = "Selected usage: " + selectedKw.toFixed(2) + " kWh" + " (" + (selectedKw / totalKWSum * 100).toFixed(2) + "%)";
-                // selectedKWText = selectedKw.toFixed(2) + " kWh" + " (" + (selectedKw / totalKWSum * 100).toFixed(2) + "%)";
                 document.getElementById("summaryText2").innerHTML = selectedKWText;
               } else {
                 document.getElementById("summaryText1").innerHTML = "Nothing selected";
@@ -691,7 +688,7 @@ d3Magic.generateFromURI = function (uri, client_name, location_name) {
 
     var heatColorMapping1 = function(d) {
       if (d < 0.1) {
-        return d3.scale.linear().domain([0, 0]).range(["rgba(235, 234, 237, 0.1)", "rgba(235, 234, 237, 0.1)"])(d); //#bbbabb #ccc
+        return d3.scale.linear().domain([0, 0]).range(["rgba(235, 234, 237, 0.1)", "rgba(235, 234, 237, 0.1)"])(d);
       }
       else {
         return d3.scale.linear().domain([minHeat, maxHeat]).range(["blue", "red"])(d);
@@ -1118,7 +1115,7 @@ d3Magic.generateFromURI = function (uri, client_name, location_name) {
           else {
             return "";
           }
-        })
+        });
 
         heatmapChart1.colsLabel(function(d) {
           if (d % 2 == 0) {
@@ -1127,7 +1124,7 @@ d3Magic.generateFromURI = function (uri, client_name, location_name) {
           else {
             return "";
           }
-        })
+        });
       }
       else {
         heatmapChart.colsLabel(function(d) {

@@ -122,7 +122,6 @@ function parseLocation(locations){
 		var location = locations[i],
 			name = location["name"];
 			location_obj[name] = location;
-		// console.log(name);
 		dropdown.append("li")
 			.attr("class", "location-li")
 			.text(name);
