@@ -8,6 +8,12 @@
 // ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+/*
+
+NOTE - room is equivalent to sublocation
+
+*/
+
 var crossfilterMagic = crossfilterMagic || {};
 
 crossfilterMagic.arrayForOccupancy = [];
@@ -15,25 +21,28 @@ crossfilterMagic.arrayForOccupancy = [];
 //Get the occupancy data
 crossfilterMagic.generateFromOccupancyURI = function (uri) {
   d3.json(uri, function(error, rawData) {
-    var WOStart = 0,
-        WOEnd = 0,
-        PWOStart = 0,
-        PWOEnd = 0,
-        dayMin = 7,
-        dayMax = 0,
-        dayOfWeek = 0;
+    var WOStart = 0,    //Start of working hours
+        WOEnd = 0,      //End of working hours
+        PWOStart = 0,   //Semi-working hours start
+        PWOEnd = 0,     //Semi-working hours end
+        dayMin = 7,     //Keep track of the lowest day of the week
+        dayMax = 0,     //Keep track of the highest day of week
+        dayOfWeek = 0;  //Keep track of the current day of week
 
-    //Re-assign the days of the week
     rawData.forEach(function (d) {
+      //Re-assign the days of the week
       if (d.day_of_week == 6) {
         dayOfWeek = 0;
       }
       else {
         dayOfWeek = d.day_of_week + 1;
       }
+
+      //Keep track of max day of week
       if (dayOfWeek > dayMax) {
         dayMax = dayOfWeek;
       }
+      //Keep track of min day of week
       if (dayOfWeek < dayMin) {
         dayMin = dayOfWeek;
       }
@@ -49,6 +58,7 @@ crossfilterMagic.generateFromOccupancyURI = function (uri) {
         PWOEnd = parseInt(d.end_time.split(":")[0]);
       }
 
+      //Fill in the occupancy array
       crossfilterMagic.arrayForOccupancy.push({
         day: dayOfWeek,
         workingStart: WOStart,
@@ -83,18 +93,17 @@ crossfilterMagic.generateFromURI = function (uri, client_name, location_name) {
   d3.json(uri, function(error, rawData) {
 
     //Totals
-    var totals = {},
-        maxTotal = 0,
-        forGraph = [],
-        totalKWSum = 0,
-        totalCostSum = 0;
+    var totals = {},        //Keep track of the usage (kWh) per room
+        roomData = [],      //Get room data in graph format (flattened)
+        totalKWSum = 0,     //Store the total usage for the client
+        totalCostSum = 0;   //Store the total cost for the client
 
     rawData.forEach(function(d) {
       var name = d.sublocation_name,
           data = d.data;
 
-      var total = 0;
-      var totalC = 0;
+      var total = 0;  //Keep track of the usage of the current data point
+      var totalC = 0; //Keep track of the cost of the current data point
       for (var k = 0; k < data.length; k++) {
         total += data[k].y;
         totalC += data[k].total_cost;
@@ -104,44 +113,37 @@ crossfilterMagic.generateFromURI = function (uri, client_name, location_name) {
         totals[name] += total;
         totalKWSum += total;
         totalCostSum += totalC;
-        if (totals[name] > maxTotal) {
-          maxTotal = totals[name];
-        }
       } else {
         totals[name] = total;
         totalKWSum += total;
         totalCostSum += totalC;
-        if (totals[name] > maxTotal) {
-          maxTotal = totals[name];
-        }
       }
     });
 
-    var maxIndex = 0;
+    var arr = Object.keys(totals);    //Array of room names
 
-    var arr = Object.keys(totals);
     for (var i = 0; i < arr.length; i++) {
-      maxIndex = arr.length - 1;
-
-      forGraph.push({ name: arr[i],
+      roomData.push({ name: arr[i],
                       index: i,
                       value: totals[arr[i]]
                     });   
     }
 
+    var smallDataArray = [];  //Store rooms that are insignificant so they are not included in the charts
+
     //If the data is insignificant, don't show it - special case for Eataly
     if (client_name == "Eataly") {
-      var smallArray = [];
-      for (var y = 0; y < forGraph.length; y++) {
-        if (forGraph[y].value / totalKWSum < 0.04) {
-          smallArray.push(forGraph[y].name);
+      for (var y = 0; y < roomData.length; y++) {
+        //If the room contributes less than 4 percent to usage, don't include it
+        if (roomData[y].value / totalKWSum < 0.04) {
+          smallDataArray.push(roomData[y].name);
         }
       }
     } else {
-      var smallArray = [];
-      for (var y = 0; y < forGraph.length; y++) {
-        if (forGraph[y].value / totalKWSum < 0.015) {
-          smallArray.push(forGraph[y].name);
+      for (var y = 0; y < roomData.length; y++) {
+        //If the room contributes less than 1.5 percent to usage, don't include it
+        if (roomData[y].value / totalKWSum < 0.015) {
+          smallDataArray.push(roomData[y].name);
         }
       }
     }
@@ -161,10 +163,8 @@ crossfilterMagic.generateFromURI = function (uri, client_name, location_name) {
     var dataForGraphs = [],
         roomsForUsage = [],
         indexing = 0,
-        maxIndex = 0,
         equipForUsage = [],
-        indexing1 = 0,
-        maxIndex1= 0;
+        indexing1 = 0;
 
     //Assign each room and equipment type an index
     rawData.forEach(function(e) {
@@ -173,13 +173,11 @@ crossfilterMagic.generateFromURI = function (uri, client_name, location_name) {
 
       if (Object.keys(roomsForUsage).indexOf("" + roomName) == -1) {
         roomsForUsage[roomName] = indexing;
-        maxIndex = indexing;
         indexing++;
       }
 
       if (Object.keys(equipForUsage).indexOf("" + equipmentName) == -1) {
         equipForUsage[equipmentName] = indexing1;
-        maxIndex1 = indexing1;
         indexing1++;
       }
     });
@@ -197,7 +195,7 @@ crossfilterMagic.generateFromURI = function (uri, client_name, location_name) {
         //Push the first piece of data into the array for dc graphs
         //Note - dc works best with flattened data
         if (dataForGraphs.length == 0) {
-          if ($.inArray(roomName, smallArray) == -1) {
+          if ($.inArray(roomName, smallDataArray) == -1) {
             dataForGraphs.push({  room: roomName,
                                index: roomsForUsage[roomName],
                                equip: equipmentName,
@@ -246,7 +244,7 @@ crossfilterMagic.generateFromURI = function (uri, client_name, location_name) {
             }
             //Push the rest of the data into the array for dc graphs
             else if (z == dataForGraphs.length - 1) {
-                if ($.inArray(roomName, smallArray) == -1) {
+                if ($.inArray(roomName, smallDataArray) == -1) {
                   fillInData(dataForGraphs, roomName, roomsForUsage, equipmentName, equipForUsage, output, d.day,
                     cost, parseInt(d.hour.split(":")[0]), crossfilterMagic.arrayForOccupancy)
                 }
@@ -361,9 +359,6 @@ crossfilterMagic.generateFromURI = function (uri, client_name, location_name) {
 
     //Make the x-axis ticks display the room name
     barChart.xAxis().tickFormat(function (v) {
-      if (v == -1 || v == maxIndex + 1) {
-        return "";
-      }
       return roomArray[v];
     });
     
@@ -402,9 +397,6 @@ crossfilterMagic.generateFromURI = function (uri, client_name, location_name) {
 
     //Make the x-axis ticks display the equipment type
     barChartE.xAxis().tickFormat(function (v) {
-      if (v == -1 || v == maxIndex1 + 1) {
-        return "";
-      }
       return equipArray[v];
     });
 
@@ -832,7 +824,7 @@ crossfilterMagic.generateFromURI = function (uri, client_name, location_name) {
             }
 
             if (d.key == roomArray.length - 1) {
-              if (textForWriting.split(",").length == roomArray.length + 1 - smallArray.length) {
+              if (textForWriting.split(",").length == roomArray.length + 1 - smallDataArray.length) {
                 selectedRoomsText = "All locations"
               } else {
                 selectedRoomsText = textForWriting.substring(0, textForWriting.length - 2);

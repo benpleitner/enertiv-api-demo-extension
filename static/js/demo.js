@@ -31,7 +31,6 @@ function postLocation(client_data){
 		console.log(location_data);												// location information
 		location_data_obj = parseLocation(location_data);
 		generateSun(location_data[0]);
-		// Sunburst Chart with location data
 	});
 }
 
