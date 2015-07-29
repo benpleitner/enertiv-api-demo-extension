@@ -160,11 +160,11 @@ crossfilterMagic.generateFromURI = function (uri, client_name, location_name) {
     });
 
     //Declare variables for data calculations
-    var dataForGraphs = [],
-        roomsForUsage = [],
-        indexing = 0,
-        equipForUsage = [],
-        indexing1 = 0;
+    var dataForGraphs = [],   //Store the data to be crossfiltered
+        roomsForUsage = [],   //Give each room name an index
+        indexing = 0,         //Index for the current room
+        equipForUsage = [],   //Give each equipment type an index
+        indexing1 = 0;        //Index for the current equipment type
 
     //Assign each room and equipment type an index
     rawData.forEach(function(e) {
@@ -183,8 +183,8 @@ crossfilterMagic.generateFromURI = function (uri, client_name, location_name) {
     });
 
     rawData.forEach(function(e) {
-      var roomName = e.sublocation_name;
-      var equipmentName = e.equipment_type;
+      var roomName = e.sublocation_name,
+          equipmentName = e.equipment_type;
 
       e.data.forEach(function (d) {
         var day = d.day,
@@ -195,24 +195,25 @@ crossfilterMagic.generateFromURI = function (uri, client_name, location_name) {
         //Push the first piece of data into the array for dc graphs
         //Note - dc works best with flattened data
         if (dataForGraphs.length == 0) {
+          //If the room name is not in smallDataArray, fill in the first row of data
           if ($.inArray(roomName, smallDataArray) == -1) {
-            dataForGraphs.push({  room: roomName,
-                               index: roomsForUsage[roomName],
-                               equip: equipmentName,
-                               indexE: equipForUsage[equipmentName],
-                               valueE: output,
-                               value: output,
-                               cost: cost,
-                               costE: cost,
-                               valueOcc: output,
-                               valueSemi: 0,
-                               valueOff: 0,
-                               valueEOcc: output,
-                               valueESemi: 0,
-                               valueEOff: 0,
-                               day: d.day,
-                               hour: parseInt(d.hour.split(":")[0]),
-                               occupancy: occupancy(parseInt(d.hour.split(":")[0]), d.day, crossfilterMagic.arrayForOccupancy)
+            dataForGraphs.push({  room: roomName,                       //Room name
+                               index: roomsForUsage[roomName],          //Index of room
+                               equip: equipmentName,                    //Equipment type
+                               indexE: equipForUsage[equipmentName],    //Index of equipment type
+                               valueE: output,                          //Total usage of the equipment type (kWh)
+                               value: output,                           //Total usage of the room (kWh)
+                               cost: cost,                              //Cost of the room
+                               // costE: cost,                             //Cost of the equipment type
+                               valueOcc: output,                        //Usage for occupied hours of the room
+                               valueSemi: 0,                            //Usage for semi-occupied hours of the room
+                               valueOff: 0,                             //Usage for off hours of the room
+                               valueEOcc: output,                       //Usage for occupied hours of the equipment type
+                               valueESemi: 0,                           //Usage for semi-occupied hours of the equipment type
+                               valueEOff: 0,                            //Usage for off hours of the equipment type
+                               day: d.day,                              //Day of the week (number from 0-6)
+                               hour: parseInt(d.hour.split(":")[0]),    //Hour
+                               occupancy: occupancy(parseInt(d.hour.split(":")[0]), d.day, crossfilterMagic.arrayForOccupancy)  //Occupancy number (look at the occupancy function for what that means)
                             });
           }
         } else {
@@ -236,15 +237,18 @@ crossfilterMagic.generateFromURI = function (uri, client_name, location_name) {
                 dataForGraphs[z].valueOff += output;
               }
 
+              //Update the total usage and cost of current row in the array
               dataForGraphs[z].value += output;
               dataForGraphs[z].valueE += output;
               dataForGraphs[z].cost += cost;
               dataForGraphs[z].costE += cost;
               break;
             }
-            //Push the rest of the data into the array for dc graphs
+            //Push data into the array if not already present in array for dc graphs
             else if (z == dataForGraphs.length - 1) {
+                //if the room name is not in smallDataArray, then fill in the data
                 if ($.inArray(roomName, smallDataArray) == -1) {
+                  //Call the helper function fillInData (declared towards the end of the program)
                   fillInData(dataForGraphs, roomName, roomsForUsage, equipmentName, equipForUsage, output, d.day,
                     cost, parseInt(d.hour.split(":")[0]), crossfilterMagic.arrayForOccupancy)
                 }
@@ -257,30 +261,34 @@ crossfilterMagic.generateFromURI = function (uri, client_name, location_name) {
       }); 
     });
     
-    //Watcher for the width of the page
+    //Watcher for the width of the well on the page
     var width = document.getElementById("well").offsetWidth;
 
     //Variables for writing to html
-    var sumCost = 0,
-        sumKw = 0,
-        ratio = 0,
-        selectedCost = 0,
-        selectedKw = 0;
+    var sumCost = 0,        //Variable to display the total cost for the client
+        sumKw = 0,          //Variable to display the total usage for the client
+        ratio = 0,          //Variable to calculate the ratio of usage to cost
+        selectedCost = 0,   //Variable to display the crossfiltered cost for the client
+        selectedKw = 0;     //Variable to display the crossfiltered usage for the client
 
-    //Crossfilters
+    /*
+
+    This is where the crossfilter magic begins
+
+    */
+    //Assign an index to each room to use for tick marks in the room bar chart
     var roomArray = [];
     dataForGraphs.forEach(function(d) {
         roomArray[d.index] = d.room;
     });
 
+    //Assign an index to each equipment to use for tick marks in the equipment bar chart
     var equipArray = [];
     dataForGraphs.forEach(function(d) {
         equipArray[d.indexE] = d.equip;
     });
 
-    var data = dataForGraphs
-
-    var ndx = crossfilter(data);
+    var ndx = crossfilter(dataForGraphs); //Crossfilter the data
 
     //Days of the week row chart
     var daysOfWeek = ndx.dimension(function(d) {
@@ -954,6 +962,12 @@ crossfilterMagic.generateFromURI = function (uri, client_name, location_name) {
     }
     addXAxis(rowChart, "kWh");
 
+    /*
+    Function that
+      returns 1 if the hour is a working hour
+      returns 0.5 if the hour is a semi-working hour
+      returns 0 if the hour is an off hour
+    */
     function occupancy (hour, day, arrayForOccupancy) {
       for (var i = 0; i < arrayForOccupancy.length; i++) {
         if (day == arrayForOccupancy[i].day) {
@@ -983,7 +997,7 @@ crossfilterMagic.generateFromURI = function (uri, client_name, location_name) {
     document.getElementById("summaryTextB").innerHTML = totalKWText;
 
     //Helper function that fills in the data
-    function fillInData (dataForGraphs, roomName, roomsForUsage, equipmentName, equipForUsage, output, day, cost, hour,
+    function fillInData(dataForGraphs, roomName, roomsForUsage, equipmentName, equipForUsage, output, day, cost, hour,
       arrayForOccupancy) {
       if (occupancy(hour, day, arrayForOccupancy) == 1) {
         dataForGraphs.push({  room: roomName,
@@ -993,7 +1007,7 @@ crossfilterMagic.generateFromURI = function (uri, client_name, location_name) {
                            valueE: output,
                            value: output,
                            cost: cost,
-                           costE: cost,
+                           // costE: cost,
                            valueOcc: output,
                            valueSemi: 0,
                            valueOff: 0,
@@ -1013,7 +1027,7 @@ crossfilterMagic.generateFromURI = function (uri, client_name, location_name) {
                            valueE: output,
                            value: output,
                            cost: cost,
-                           costE: cost,
+                           // costE: cost,
                            valueOcc: 0,
                            valueSemi: output,
                            valueOff: 0,
@@ -1033,7 +1047,7 @@ crossfilterMagic.generateFromURI = function (uri, client_name, location_name) {
                            valueE: output,
                            value: output,
                            cost: cost,
-                           costE: cost,
+                           // costE: cost,
                            valueOcc: 0,
                            valueSemi: 0,
                            valueOff: output,
