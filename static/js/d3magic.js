@@ -8,28 +8,20 @@
 // ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-var d3Magic = d3Magic || {};
+var crossfilterMagic = crossfilterMagic || {};
 
-// Keep track of the node that is currently being displayed as the root.
-d3Magic.node;
+crossfilterMagic.arrayForOccupancy = [];
+
+//Get the occupancy data
+crossfilterMagic.generateFromOccupancyURI = function (uri) {
+  d3.json(uri, function(error, rawData) {
     var WOStart = 0,
         WOEnd = 0,
         PWOStart = 0,
         PWOEnd = 0,
-        dayOfWeek = 0,
-        arrayForOccupancy = [],
         dayMin = 7,
-        dayMax = 0;
-
-//Get the occupancy data
-d3Magic.generateFromOccupancyURI = function (uri) {
-  d3.json(uri, function(error, rawData) {
-    WOStart = 0;
-    WOEnd = 0;
-    PWOStart = 0;
-    PWOEnd = 0;
-    dayMin = 7;
-    dayMax = 0;
+        dayMax = 0,
+        dayOfWeek = 0;
 
     //Re-assign the days of the week
     rawData.forEach(function (d) {
@@ -46,16 +38,18 @@ d3Magic.generateFromOccupancyURI = function (uri) {
         dayMin = dayOfWeek;
       }
 
+      //Get the working hours
       if (d.occupancy_type == 1) {
         WOStart = parseInt(d.start_time.split(":")[0]);
         WOEnd = parseInt(d.end_time.split(":")[0]);
       }
+      //Get the partially working hours
       else if (d.occupancy_type == 2) {
         PWOStart = parseInt(d.start_time.split(":")[0]);
         PWOEnd = parseInt(d.end_time.split(":")[0]);
       }
 
-      arrayForOccupancy.push({
+      crossfilterMagic.arrayForOccupancy.push({
         day: dayOfWeek,
         workingStart: WOStart,
         workingEnd: WOEnd,
@@ -67,7 +61,8 @@ d3Magic.generateFromOccupancyURI = function (uri) {
     var doubleCount = false;
     var dayRange = dayMax - dayMin + 1;
 
-    arrayForOccupancy.forEach(function (d) {
+    //Check for double counting with working hours
+    crossfilterMagic.arrayForOccupancy.forEach(function (d) {
       if (d.semiStart != 0) {
         doubleCount = true;
       }
@@ -76,15 +71,15 @@ d3Magic.generateFromOccupancyURI = function (uri) {
     var newArr = [];
     if (doubleCount) {
       for (var i = 1; i < dayRange + 1; i++) {
-        newArr[i - 1] = arrayForOccupancy[arrayForOccupancy.length - i]
+        newArr[i - 1] = crossfilterMagic.arrayForOccupancy[crossfilterMagic.arrayForOccupancy.length - i]
       }
     }
-    arrayForOccupancy = newArr;
+    crossfilterMagic.arrayForOccupancy = newArr;
   });
 }
 
 //Get the energy usage and cost data
-d3Magic.generateFromURI = function (uri, client_name, location_name) {
+crossfilterMagic.generateFromURI = function (uri, client_name, location_name) {
   d3.json(uri, function(error, rawData) {
 
     //Totals
@@ -134,7 +129,7 @@ d3Magic.generateFromURI = function (uri, client_name, location_name) {
                     });   
     }
 
-    //Special case for Eataly
+    //If the data is insignificant, don't show it - special case for Eataly
     if (client_name == "Eataly") {
       var smallArray = [];
       for (var y = 0; y < forGraph.length; y++) {
@@ -163,18 +158,18 @@ d3Magic.generateFromURI = function (uri, client_name, location_name) {
     });
 
     //Declare variables for data calculations
-    var forGraphWeekdays = [];
-    var roomsForUsage = [];
-    var indexing = 0;
-    var maxIndex = 0;
-    var equipForUsage = [];
-    var indexing1 = 0;
-    var maxIndex1= 0;
+    var dataForGraphs = [],
+        roomsForUsage = [],
+        indexing = 0,
+        maxIndex = 0,
+        equipForUsage = [],
+        indexing1 = 0,
+        maxIndex1= 0;
 
     //Assign each room and equipment type an index
     rawData.forEach(function(e) {
-      var roomName = e.sublocation_name;
-      var equipmentName = e.equipment_type;
+      var roomName = e.sublocation_name,
+          equipmentName = e.equipment_type;
 
       if (Object.keys(roomsForUsage).indexOf("" + roomName) == -1) {
         roomsForUsage[roomName] = indexing;
@@ -200,9 +195,10 @@ d3Magic.generateFromURI = function (uri, client_name, location_name) {
             cost = d.total_cost;
 
         //Push the first piece of data into the array for dc graphs
-        if (forGraphWeekdays.length == 0) {
+        //Note - dc works best with flattened data
+        if (dataForGraphs.length == 0) {
           if ($.inArray(roomName, smallArray) == -1) {
-            forGraphWeekdays.push({  room: roomName,
+            dataForGraphs.push({  room: roomName,
                                index: roomsForUsage[roomName],
                                equip: equipmentName,
                                indexE: equipForUsage[equipmentName],
@@ -218,40 +214,41 @@ d3Magic.generateFromURI = function (uri, client_name, location_name) {
                                valueEOff: 0,
                                day: d.day,
                                hour: parseInt(d.hour.split(":")[0]),
-                               occupancy: occupancy(parseInt(d.hour.split(":")[0]), d.day, arrayForOccupancy)
+                               occupancy: occupancy(parseInt(d.hour.split(":")[0]), d.day, crossfilterMagic.arrayForOccupancy)
                             });
           }
         } else {
-          for (var z = 0; z < forGraphWeekdays.length; z++) {
+          for (var z = 0; z < dataForGraphs.length; z++) {
             //Update values if already present in the array
-            if (parseInt(d.hour.split(":")[0]) == forGraphWeekdays[z].hour && d.day == forGraphWeekdays[z].day && roomName == forGraphWeekdays[z].room &&
-              equipmentName == forGraphWeekdays[z].equip) {
+            if (parseInt(d.hour.split(":")[0]) == dataForGraphs[z].hour && d.day == dataForGraphs[z].day && roomName == dataForGraphs[z].room &&
+              equipmentName == dataForGraphs[z].equip) {
 
-              if (occupancy(parseInt(d.hour.split(":")[0]), d.day, arrayForOccupancy) == 1) {
-                forGraphWeekdays[z].valueEOcc += output;
-                forGraphWeekdays[z].valueOcc += output;
+              //Check which type of hour the data is
+              if (occupancy(parseInt(d.hour.split(":")[0]), d.day, crossfilterMagic.arrayForOccupancy) == 1) {
+                dataForGraphs[z].valueEOcc += output;
+                dataForGraphs[z].valueOcc += output;
 
               }
-              else if (occupancy(parseInt(d.hour.split(":")[0]), d.day, arrayForOccupancy) == 0.5) {
-                forGraphWeekdays[z].valueESemi += output;
-                forGraphWeekdays[z].valueSemi += output;
+              else if (occupancy(parseInt(d.hour.split(":")[0]), d.day, crossfilterMagic.arrayForOccupancy) == 0.5) {
+                dataForGraphs[z].valueESemi += output;
+                dataForGraphs[z].valueSemi += output;
               }
               else {
-                forGraphWeekdays[z].valueEOff += output;
-                forGraphWeekdays[z].valueOff += output;
+                dataForGraphs[z].valueEOff += output;
+                dataForGraphs[z].valueOff += output;
               }
 
-              forGraphWeekdays[z].value += output;
-              forGraphWeekdays[z].valueE += output;
-              forGraphWeekdays[z].cost += cost;
-              forGraphWeekdays[z].costE += cost;
+              dataForGraphs[z].value += output;
+              dataForGraphs[z].valueE += output;
+              dataForGraphs[z].cost += cost;
+              dataForGraphs[z].costE += cost;
               break;
             }
             //Push the rest of the data into the array for dc graphs
-            else if (z == forGraphWeekdays.length - 1) {
+            else if (z == dataForGraphs.length - 1) {
                 if ($.inArray(roomName, smallArray) == -1) {
-                  fillInData(forGraphWeekdays, roomName, roomsForUsage, equipmentName, equipForUsage, output, d.day,
-                    cost, parseInt(d.hour.split(":")[0]), arrayForOccupancy)
+                  fillInData(dataForGraphs, roomName, roomsForUsage, equipmentName, equipForUsage, output, d.day,
+                    cost, parseInt(d.hour.split(":")[0]), crossfilterMagic.arrayForOccupancy)
                 }
                 break;
             }
@@ -274,16 +271,16 @@ d3Magic.generateFromURI = function (uri, client_name, location_name) {
 
     //Crossfilters
     var roomArray = [];
-    forGraphWeekdays.forEach(function(d) {
+    dataForGraphs.forEach(function(d) {
         roomArray[d.index] = d.room;
     });
 
     var equipArray = [];
-    forGraphWeekdays.forEach(function(d) {
+    dataForGraphs.forEach(function(d) {
         equipArray[d.indexE] = d.equip;
     });
 
-    var data = forGraphWeekdays
+    var data = dataForGraphs
 
     var ndx = crossfilter(data);
 
@@ -344,7 +341,7 @@ d3Magic.generateFromURI = function (uri, client_name, location_name) {
           .group(kWOccupiedData, "Working hours")
           .stack(kWSemiData)
           .stack(kWOffHourData)
-          .colors(function(d) {
+          .colors(function(d) {     //Colors based on type of hour
             if (d == 1) {
               return "#0092cc";
             } else if (d == 2) {
@@ -362,6 +359,7 @@ d3Magic.generateFromURI = function (uri, client_name, location_name) {
           .renderHorizontalGridLines(true)
           .transitionDuration(700);
 
+    //Make the x-axis ticks display the room name
     barChart.xAxis().tickFormat(function (v) {
       if (v == -1 || v == maxIndex + 1) {
         return "";
@@ -385,7 +383,7 @@ d3Magic.generateFromURI = function (uri, client_name, location_name) {
           .stack(kWESemiData)
           .stack(kWEOffHourData)
           .colors(function(d) {
-            if (d == 1) {
+            if (d == 1) {         //Colors based on type of hour
               return "#0092cc";
             } else if (d == 2) {
               return "#00b4b5";
@@ -402,6 +400,7 @@ d3Magic.generateFromURI = function (uri, client_name, location_name) {
           .renderHorizontalGridLines(true)
           .transitionDuration(700);
 
+    //Make the x-axis ticks display the equipment type
     barChartE.xAxis().tickFormat(function (v) {
       if (v == -1 || v == maxIndex1 + 1) {
         return "";
@@ -529,6 +528,7 @@ d3Magic.generateFromURI = function (uri, client_name, location_name) {
         })
         .transitionDuration(700);
 
+    //Change dimensions of pie chart if the screen is 992px or less
     if ($(window).width() <= 992) {      
       pieChart1.width(width)
                 .height(width / 2.25)
@@ -555,6 +555,7 @@ d3Magic.generateFromURI = function (uri, client_name, location_name) {
           .renderHorizontalGridLines(true)
           .transitionDuration(700);
 
+    //Update x-axis ticks to display the hour
     barChart2.xAxis().tickFormat(function (v) {
       if (v == -1 || v == 24) {
         return "";
@@ -562,7 +563,7 @@ d3Magic.generateFromURI = function (uri, client_name, location_name) {
       return moment().hour(v).format("h a");
     });
 
-    //Bar Chart for Calculation
+    //Bar Chart for Calculation and writing to html page
     barChartC = dc.barChart("#calculations");
     
     barChartC.width(1100)
@@ -616,9 +617,11 @@ d3Magic.generateFromURI = function (uri, client_name, location_name) {
 
     var heatmapChart = dc.heatMap("#heatmap");
 
+    //Color domain for heatmap
     var heatColorMapping = function(d) {
+      //If a value in the heatmap is insignificant, then don't show it
       if (d < 0.1) {
-        return d3.scale.linear().domain([0, 0]).range(["rgba(235, 234, 237, 0.1)", "rgba(235, 234, 237, 0.1)"])(d); //#bbbabb #ccc
+        return d3.scale.linear().domain([0, 0]).range(["rgba(235, 234, 237, 0.1)", "rgba(235, 234, 237, 0.1)"])(d);
       }
       else {
         return d3.scale.linear().domain([minHeat, maxHeat]).range(["blue", "red"])(d);
@@ -661,10 +664,17 @@ d3Magic.generateFromURI = function (uri, client_name, location_name) {
             .colors(heatColorMapping)
             .calculateColorDomain();
 
+    //Make heatmap data points square instead of circular
     heatmapChart.xBorderRadius(0);
     heatmapChart.yBorderRadius(0);
 
     //Heatmap -- Key
+    /*
+    This is a hack, but I make an array of length 24 with the first element
+    being the min value in the heatmap and the last element having the max value
+    in the heatmap. The elements in between are spaced evenly. Through this array
+    I will create a heatmap key.
+    */
     var rangeHeat = maxHeat - minHeat;
     var heatArr = [];
     for (var h = 0; h < 24; h++) {
@@ -764,7 +774,11 @@ d3Magic.generateFromURI = function (uri, client_name, location_name) {
         })
         .order(d3.descending);
 
-    /* Calculations */
+    /* 
+
+    Calculations and writing to html
+
+    */
     //Days of week
     var daysOfWeek1 = ndx.dimension(function(d) {
       return d.day;
@@ -802,7 +816,7 @@ d3Magic.generateFromURI = function (uri, client_name, location_name) {
     });
 
     //Bar Chart - rooms calculations
-    barChartRC = dc.barChart("#bc2");
+    barChartRC = dc.barChart("#hiddenBarChartRooms");
     
     barChartRC.width(800 * 0.75)
           .height(350 * 0.75)
@@ -832,7 +846,7 @@ d3Magic.generateFromURI = function (uri, client_name, location_name) {
           .transitionDuration(700);
 
     //Bar Chart - equipment
-    barChartEC = dc.barChart("#bc3");
+    barChartEC = dc.barChart("#hiddenBarChartEquip");
     
     barChartEC.width(800 * 0.75)
           .height(350 * 0.75)
@@ -874,7 +888,7 @@ d3Magic.generateFromURI = function (uri, client_name, location_name) {
     occupancyArray[2] = "Working hours";
 
     //Pie Chart - types of hours calculations
-    pieChart14 = dc.pieChart("#bc4");
+    pieChart14 = dc.pieChart("#hiddenPieChart");
     
     pieChart14.width(800 * 0.75)
         .height(350 * 0.75)
@@ -903,7 +917,7 @@ d3Magic.generateFromURI = function (uri, client_name, location_name) {
         .transitionDuration(700);
 
     //Row Chart - calculations
-    rowChart12 = dc.rowChart("#bc1");
+    rowChart12 = dc.rowChart("#hiddenRowChart");
 
     rowChart12.width(800 * 0.75)
           .height(350 * 0.75)
@@ -977,10 +991,10 @@ d3Magic.generateFromURI = function (uri, client_name, location_name) {
     document.getElementById("summaryTextB").innerHTML = totalKWText;
 
     //Helper function that fills in the data
-    function fillInData (forGraphWeekdays, roomName, roomsForUsage, equipmentName, equipForUsage, output, day, cost, hour,
+    function fillInData (dataForGraphs, roomName, roomsForUsage, equipmentName, equipForUsage, output, day, cost, hour,
       arrayForOccupancy) {
       if (occupancy(hour, day, arrayForOccupancy) == 1) {
-        forGraphWeekdays.push({  room: roomName,
+        dataForGraphs.push({  room: roomName,
                            index: roomsForUsage[roomName],
                            equip: equipmentName,
                            indexE: equipForUsage[equipmentName],
@@ -1000,7 +1014,7 @@ d3Magic.generateFromURI = function (uri, client_name, location_name) {
                         });
       }
       else if (occupancy(hour, day, arrayForOccupancy) == 0.5) {
-        forGraphWeekdays.push({  room: roomName,
+        dataForGraphs.push({  room: roomName,
                            index: roomsForUsage[roomName],
                            equip: equipmentName,
                            indexE: equipForUsage[equipmentName],
@@ -1020,7 +1034,7 @@ d3Magic.generateFromURI = function (uri, client_name, location_name) {
                         });
       }
       else {
-        forGraphWeekdays.push({  room: roomName,
+        dataForGraphs.push({  room: roomName,
                            index: roomsForUsage[roomName],
                            equip: equipmentName,
                            indexE: equipForUsage[equipmentName],

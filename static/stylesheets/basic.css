@@ -151,7 +151,7 @@ nav.navbar {
   color: #2eb9ea;
 }
 
-#calculations, #bc1, #bc2, #bc3, #bc4 {
+#calculations, #hiddenRowChart, #hiddenBarChartRoom, #hiddenBarChartEquip, #hiddenPieChart {
   display: none;
 }
 

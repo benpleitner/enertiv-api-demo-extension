@@ -51,8 +51,8 @@ function generateSun(location_data) {
 			;
 	// console.log(deagg_uri);
 	d3.selectAll("#locationName").text(location_name)  // Set the location name dynamically
-	d3Magic.generateFromOccupancyURI(occupancy_uri);
-	d3Magic.generateFromURI(deagg_uri, client_name, location_name);
+	crossfilterMagic.generateFromOccupancyURI(occupancy_uri);
+	crossfilterMagic.generateFromURI(deagg_uri, client_name, location_name);
 }
 
 var today = moment(),
@@ -168,7 +168,6 @@ $(function() { $("#e1").daterangepicker({
 
 		d3.select("#fromTime").text("");
 		d3.select("#toTime").text("");
-		// d3Magic.generateFromOccupancyURI(gOUri);
-		d3Magic.generateFromURI(uri, client_name, gLName);
+		crossfilterMagic.generateFromURI(uri, client_name, gLName);
      }
 })});
