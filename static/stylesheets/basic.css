@@ -228,7 +228,7 @@ a {
 }
 
 /* Data table */
-#a {
+#dataTable {
   display: block;
   width: 100%;
   border: 1px solid #eee;
@@ -237,24 +237,24 @@ a {
   border: 1px solid black;
 }
 
-#a thead {
+#dataTable thead {
   display: -webkit-flex;
   -webkit-flex-flow: row;
 }
 
-#a thead tr {
+#dataTable thead tr {
   display: -webkit-flex;
   width: 100%;
   -webkit-align-items: stretch;
 }
 
-#a tbody {
+#dataTable tbody {
   display: -webkit-flex;
   height: 400px;
   overflow: auto;
   -webkit-flex-flow: row wrap;
 }
-#a tbody tr {
+#dataTable tbody tr {
   display: -webkit-flex;
   width: 100%;
 }

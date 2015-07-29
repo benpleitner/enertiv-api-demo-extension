@@ -13,7 +13,6 @@
 NOTE - room is equivalent to sublocation
 
 */
-
 var crossfilterMagic = crossfilterMagic || {};
 
 crossfilterMagic.arrayForOccupancy = [];
@@ -271,11 +270,6 @@ crossfilterMagic.generateFromURI = function (uri, client_name, location_name) {
         selectedCost = 0,   //Variable to display the crossfiltered cost for the client
         selectedKw = 0;     //Variable to display the crossfiltered usage for the client
 
-    /*
-
-    This is where the crossfilter magic begins
-
-    */
     //Assign an index to each room to use for tick marks in the room bar chart
     var roomArray = [];
     dataForGraphs.forEach(function(d) {
@@ -288,21 +282,27 @@ crossfilterMagic.generateFromURI = function (uri, client_name, location_name) {
         equipArray[d.indexE] = d.equip;
     });
 
-    var ndx = crossfilter(dataForGraphs); //Crossfilter the data
+    /*
 
-    //Days of the week row chart
+    This is where the crossfilter magic begins
+
+    */
+    var ndx = crossfilter(dataForGraphs); //Prepare the data to be crossfiltered
+
+    //Dimension for daysOfWeekRowChart
     var daysOfWeek = ndx.dimension(function(d) {
       return d.day;
     });
 
+    //Group for daysOfWeekRowChart
     var kW2 = daysOfWeek.group().reduceSum(function(d) {
       return d.value;
     });
 
-    //Rooms bar chart
+    //Dimension and groups for roomBarChart
     var rooms = ndx.dimension(function(d) {
-      sumCost += d.cost;
-      sumKw += d.value;
+      sumCost += d.cost;       //Calculates the total cost to write to html page
+      sumKw += d.value;        //Calculates the total usage to write to html page
       ratio = sumKw / sumCost; //This assumes that the cost and usage are linear
 
       return d.index;
@@ -320,7 +320,7 @@ crossfilterMagic.generateFromURI = function (uri, client_name, location_name) {
       return d.valueOff;
     });
 
-    //Equipment bart chart
+    //Dimension and groups for equipmentBarChart
     var roomsE = ndx.dimension(function(d) {
       return d.indexE;
     });
@@ -338,9 +338,9 @@ crossfilterMagic.generateFromURI = function (uri, client_name, location_name) {
     });
 
     //Bar Chart - rooms
-    barChart = dc.barChart("#roomBarChart");
+    roomBarChart = dc.barChart("#roomBarChart");
     
-    barChart.width(width / 2)
+    roomBarChart.width(width / 2)
           .height(0.4775 * (width / 2))
           .margins({top: 10, right: 40, bottom: 30, left: 40})
           .dimension(rooms)
@@ -366,19 +366,14 @@ crossfilterMagic.generateFromURI = function (uri, client_name, location_name) {
           .transitionDuration(700);
 
     //Make the x-axis ticks display the room name
-    barChart.xAxis().tickFormat(function (v) {
+    roomBarChart.xAxis().tickFormat(function (v) {
       return roomArray[v];
     });
     
-    if ($(window).width() <= 992) {      
-      barChart.width(width)
-            .height(0.4775 * width)
-    }
-    
     //Bar Chart - equipment
-    barChartE = dc.barChart("#equipBarChart");
+    equipmentBarChart = dc.barChart("#equipBarChart");
     
-    barChartE.width(width / 2)
+    equipmentBarChart.width(width / 2)
           .height(0.4775 * (width / 2))
           .margins({top: 10, right: 40, bottom: 30, left: 40})
           .dimension(roomsE)
@@ -404,19 +399,14 @@ crossfilterMagic.generateFromURI = function (uri, client_name, location_name) {
           .transitionDuration(700);
 
     //Make the x-axis ticks display the equipment type
-    barChartE.xAxis().tickFormat(function (v) {
+    equipmentBarChart.xAxis().tickFormat(function (v) {
       return equipArray[v];
     });
 
-    if ($(window).width() <= 992) {      
-      barChartE.width(width)
-            .height(0.4775 * width)
-    }
-
     //Row Chart - Days of the week
-    rowChart = dc.rowChart("#dayRowChart");
+    daysOfWeekRowChart = dc.rowChart("#dayRowChart");
 
-    rowChart.width(width / 2)
+    daysOfWeekRowChart.width(width / 2)
           .height(0.4775 * (width / 2))
           .margins({top: 10, right: 40, bottom: 30, left: 40})
           .dimension(daysOfWeek)
@@ -454,11 +444,6 @@ crossfilterMagic.generateFromURI = function (uri, client_name, location_name) {
           })
           .transitionDuration(700);
 
-    if ($(window).width() <= 992) {      
-      rowChart.width(width)
-            .height(0.4775 * width)
-    }
-
     dc.renderAll();
 
     /*
@@ -466,6 +451,7 @@ crossfilterMagic.generateFromURI = function (uri, client_name, location_name) {
     Occupancy
 
     */
+    //Dimension and group for occupancyPieChart
     var occupied = ndx.dimension(function(d) {
       return d.occupancy;
     });
@@ -474,6 +460,7 @@ crossfilterMagic.generateFromURI = function (uri, client_name, location_name) {
       return d.value;
     });
 
+    //Dimension and group for hourlyBarChart
     var hour = ndx.dimension(function(d) {
       return d.hour;
     });
@@ -482,6 +469,7 @@ crossfilterMagic.generateFromURI = function (uri, client_name, location_name) {
       return d.value;
     });
 
+    //Dimension and group for calculationBarChart
     var hourCalculate = ndx.dimension(function(d) {
       return d.hour;
     });
@@ -490,6 +478,7 @@ crossfilterMagic.generateFromURI = function (uri, client_name, location_name) {
       return d.value;
     });
 
+    //Dimension and group for the heat map
     var hoursDaysHeatmap = ndx.dimension(function(d) {
       return [d.hour, d.day];
     });
@@ -499,9 +488,9 @@ crossfilterMagic.generateFromURI = function (uri, client_name, location_name) {
     });
 
     //Pie Chart - different types of hours
-    pieChart1 = dc.pieChart("#occupancyPieChart");
+    occupancyPieChart = dc.pieChart("#occupancyPieChart");
     
-    pieChart1.width(width / 2)
+    occupancyPieChart.width(width / 2)
         .height(width / 4.5)
         .dimension(occupied)
         .group(kWOccupied)
@@ -528,18 +517,27 @@ crossfilterMagic.generateFromURI = function (uri, client_name, location_name) {
         })
         .transitionDuration(700);
 
-    //Change dimensions of pie chart if the screen is 992px or less
+    //If the window is less than 992px, then reajdust the width and height of the charts
     if ($(window).width() <= 992) {      
-      pieChart1.width(width)
+      roomBarChart.width(width)
+            .height(0.4775 * width)
+
+      equipmentBarChart.width(width)
+            .height(0.4775 * width)
+
+      daysOfWeekRowChart.width(width)
+            .height(0.4775 * width)
+
+      occupancyPieChart.width(width)
                 .height(width / 2.25)
                 .innerRadius(width / 8)
                 .radius(width / 5)
     }
 
     //Bar Chart - Hours of the week
-    barChart2 = dc.barChart("#hourRowChart");
+    hourlyBarChart = dc.barChart("#hourRowChart");
     
-    barChart2.width(width)
+    hourlyBarChart.width(width)
           .height(200)
           .margins({top: 10, right: 50, bottom: 30, left: 40})
           .dimension(hour)
@@ -556,24 +554,20 @@ crossfilterMagic.generateFromURI = function (uri, client_name, location_name) {
           .transitionDuration(700);
 
     //Update x-axis ticks to display the hour
-    barChart2.xAxis().tickFormat(function (v) {
+    hourlyBarChart.xAxis().tickFormat(function (v) {
       if (v == -1 || v == 24) {
         return "";
       }
       return moment().hour(v).format("h a");
     });
 
-    //Bar Chart for Calculation and writing to html page
-    barChartC = dc.barChart("#calculations");
+    //Bar Chart for Calculation and writing to html page (this chart is modeled off of hourlyBarChart and is hidden on the page)
+    caclulationBarChart = dc.barChart("#calculations");
     
-    barChartC.width(1100)
+    caclulationBarChart.width(1100)
           .height(200)
-          .margins({top: 10, right: 50, bottom: 30, left: 40})
           .dimension(hourCalculate)
           .group(kWHourCalculate)
-          .elasticY(true)
-          .centerBar(true)
-          .gap(1)
           .valueAccessor(function(p) {
             if (p.key == 0) {
               selectedKw = 0;
@@ -581,6 +575,7 @@ crossfilterMagic.generateFromURI = function (uri, client_name, location_name) {
             } else {
               selectedKw += p.value;
             }
+            //Write the crossfiltered/selected cost and usage to the html page
             if (p.key == 23) {
               if ((selectedKw / totalKWSum * 100).toFixed(2) != 100) {
                 selectedCostText = "Selected cost: $" + (selectedKw / ratio).toFixed(2) + ",";
@@ -596,23 +591,10 @@ crossfilterMagic.generateFromURI = function (uri, client_name, location_name) {
             return p.value;
           })
           .x(d3.scale.linear().domain([-1, 24]))
-          .yAxisLabel("kWh")
-          .xAxisLabel("Time")
-          .renderHorizontalGridLines(true)
-          .transitionDuration(700);
-
-    barChartC.xAxis().tickFormat(function (v) {
-      if (v == -1 || v == 24) {
-        return "";
-      }
-      return moment().hour(v).format("h a");
-    });
 
     /* Heatmap */
-    var maxHeat = 0;
-    var sumHeat = 0;
-    var numPoints = 0;
-    var minHeat = 10000;
+    var maxHeat = 0;      //Max value on the heat map
+    var minHeat = 10000;  //Min value on the heat map
     var bool = true;
 
     var heatmapChart = dc.heatMap("#heatmap");
@@ -623,6 +605,7 @@ crossfilterMagic.generateFromURI = function (uri, client_name, location_name) {
       if (d < 0.1) {
         return d3.scale.linear().domain([0, 0]).range(["rgba(235, 234, 237, 0.1)", "rgba(235, 234, 237, 0.1)"])(d);
       }
+      //Else give it a color between blue and red
       else {
         return d3.scale.linear().domain([minHeat, maxHeat]).range(["blue", "red"])(d);
       }
@@ -638,8 +621,6 @@ crossfilterMagic.generateFromURI = function (uri, client_name, location_name) {
             .group(kWHeatmap)
             .colorAccessor(function(d) {
               if (bool) {
-                sumHeat += d.value;
-                numPoints++;
                 if (d.value > maxHeat) {
                   maxHeat = d.value;
                 }
@@ -694,9 +675,9 @@ crossfilterMagic.generateFromURI = function (uri, client_name, location_name) {
       return d.val;
     });
 
-    var heatmapChart1 = dc.heatMap("#heatmapKey");
+    var heatmapKey = dc.heatMap("#heatmapKey");
 
-    var heatColorMapping1 = function(d) {
+    var heatColorMappingKey = function(d) {
       if (d < 0.1) {
         return d3.scale.linear().domain([0, 0]).range(["rgba(235, 234, 237, 0.1)", "rgba(235, 234, 237, 0.1)"])(d);
       }
@@ -705,11 +686,11 @@ crossfilterMagic.generateFromURI = function (uri, client_name, location_name) {
       }
     };
 
-    heatColorMapping1.domain = function() {
+    heatColorMappingKey.domain = function() {
       return [minHeat, maxHeat];
     };
 
-    heatmapChart1.width(width)
+    heatmapKey.width(width)
             .height(80)
             .dimension(keyHeatmap)
             .group(keyHeatmapGroup)
@@ -725,11 +706,11 @@ crossfilterMagic.generateFromURI = function (uri, client_name, location_name) {
               return "Key";
             })
             .transitionDuration(0)
-            .colors(heatColorMapping1)
+            .colors(heatColorMappingKey)
             .calculateColorDomain();
 
-    heatmapChart1.xBorderRadius(0);
-    heatmapChart1.yBorderRadius(0);
+    heatmapKey.xBorderRadius(0);
+    heatmapKey.yBorderRadius(0);
 
     //Show less x-axis labels on the heat map if the screen is small
     if (window.innerWidth <= 760) {
@@ -742,7 +723,7 @@ crossfilterMagic.generateFromURI = function (uri, client_name, location_name) {
         }
       })
 
-      heatmapChart1.colsLabel(function(d, i) {
+      heatmapKey.colsLabel(function(d, i) {
         if (d % 2 == 0) {
           return heatArr[d].val.toFixed(0);
         }
@@ -752,10 +733,10 @@ crossfilterMagic.generateFromURI = function (uri, client_name, location_name) {
       })
     }
 
-    /* Data table */
-    dataTable1 = dc.dataTable("#a")
+    //Data table
+    dataTable = dc.dataTable("#dataTable")
 
-    dataTable1
+    dataTable
         .dimension(rooms)
         .group(function(d) {
             return "";
@@ -847,7 +828,6 @@ crossfilterMagic.generateFromURI = function (uri, client_name, location_name) {
 
     //Bar Chart - equipment
     barChartEC = dc.barChart("#hiddenBarChartEquip");
-    
     barChartEC.width(800 * 0.75)
           .height(350 * 0.75)
           .dimension(roomsEC)
@@ -950,7 +930,7 @@ crossfilterMagic.generateFromURI = function (uri, client_name, location_name) {
 
     dc.renderAll();
 
-    //Helper functions
+    //Helper function that adds an x-axis label to the row chart
     function addXAxis(chartToUpdate, displayText) {
         chartToUpdate.svg()
             .append("text")
@@ -960,7 +940,7 @@ crossfilterMagic.generateFromURI = function (uri, client_name, location_name) {
             .attr("y", chartToUpdate.height())
             .text(displayText);
     }
-    addXAxis(rowChart, "kWh");
+    addXAxis(daysOfWeekRowChart, "kWh");
 
     /*
     Function that
@@ -1067,63 +1047,63 @@ crossfilterMagic.generateFromURI = function (uri, client_name, location_name) {
         var newWidth = document.getElementById("well").offsetWidth;
         heatmapChart.width(newWidth)
           .transitionDuration(0);
-        heatmapChart1.width(newWidth)
+        heatmapKey.width(newWidth)
           .transitionDuration(0);
-        barChart2.width(newWidth)
+        hourlyBarChart.width(newWidth)
           .transitionDuration(0);
-        barChart.width(newWidth / 2)
+        roomBarChart.width(newWidth / 2)
           .height(0.4775 * (newWidth / 2))
           .transitionDuration(0);
-        barChartE.width(newWidth / 2)
+        equipmentBarChart.width(newWidth / 2)
           .height(0.4775 * (newWidth / 2))
           .transitionDuration(0);
-        rowChart.width(newWidth / 2)
+        daysOfWeekRowChart.width(newWidth / 2)
           .height(0.4775 * (newWidth / 2))
           .transitionDuration(0);
-        pieChart1.width(newWidth / 2)
+        occupancyPieChart.width(newWidth / 2)
           .height(newWidth / 4.5)
           .innerRadius(newWidth / 16)
           .radius(newWidth / 10)
           .transitionDuration(0);
          dc.renderAll();
           heatmapChart.transitionDuration(0);
-          heatmapChart1.transitionDuration(750);
-          barChart2.transitionDuration(750);
-          barChart.transitionDuration(750);
-          barChartE.transitionDuration(750);
-          rowChart.transitionDuration(750);
-          pieChart1.transitionDuration(750);
+          heatmapKey.transitionDuration(750);
+          hourlyBarChart.transitionDuration(750);
+          roomBarChart.transitionDuration(750);
+          equipmentBarChart.transitionDuration(750);
+          daysOfWeekRowChart.transitionDuration(750);
+          occupancyPieChart.transitionDuration(750);
       }
       else {
         var newWidth = document.getElementById("well").offsetWidth;
         heatmapChart.width(newWidth)
           .transitionDuration(0);
-        heatmapChart1.width(newWidth)
+        heatmapKey.width(newWidth)
           .transitionDuration(0);
-        barChart2.width(newWidth)
+        hourlyBarChart.width(newWidth)
           .transitionDuration(0);
-        barChart.width(newWidth)
+        roomBarChart.width(newWidth)
           .height(0.4775 * (newWidth))
           .transitionDuration(0);
-        barChartE.width(newWidth)
+        equipmentBarChart.width(newWidth)
           .height(0.4775 * (newWidth))
           .transitionDuration(0);
-        rowChart.width(newWidth)
+        daysOfWeekRowChart.width(newWidth)
           .height(0.4775 * (newWidth))
           .transitionDuration(0);
-        pieChart1.width(newWidth)
+        occupancyPieChart.width(newWidth)
           .height(newWidth / 2.25)
           .innerRadius(newWidth / 8)
           .radius(newWidth / 5)
           .transitionDuration(0);
         dc.renderAll();
           heatmapChart.transitionDuration(0);
-          heatmapChart1.transitionDuration(750);
-          barChart2.transitionDuration(750);
-          barChart.transitionDuration(750);
-          barChartE.transitionDuration(750);
-          rowChart.transitionDuration(750);
-          pieChart1.transitionDuration(750);
+          heatmapKey.transitionDuration(750);
+          hourlyBarChart.transitionDuration(750);
+          roomBarChart.transitionDuration(750);
+          equipmentBarChart.transitionDuration(750);
+          daysOfWeekRowChart.transitionDuration(750);
+          occupancyPieChart.transitionDuration(750);
       }
 
       //Show less x-axis labels on the heat map if the screen is small
@@ -1137,7 +1117,7 @@ crossfilterMagic.generateFromURI = function (uri, client_name, location_name) {
           }
         });
 
-        heatmapChart1.colsLabel(function(d) {
+        heatmapKey.colsLabel(function(d) {
           if (d % 2 == 0) {
             return heatArr[d].val.toFixed(0);
           }
@@ -1151,7 +1131,7 @@ crossfilterMagic.generateFromURI = function (uri, client_name, location_name) {
           return moment().hour(d).format("h a");
         })
 
-        heatmapChart1.colsLabel(function(d) {
+        heatmapKey.colsLabel(function(d) {
           return heatArr[d].val.toFixed(0);
         })
       }
