@@ -289,233 +289,247 @@ crossfilterMagic.generateFromURI = function (uri, client_name, location_name) {
     */
     var ndx = crossfilter(dataForGraphs); //Prepare the data to be crossfiltered
 
-    //Dimension for daysOfWeekRowChart
-    var daysOfWeek = ndx.dimension(function(d) {
-      return d.day;
-    });
+    //Make the charts
+    makeRoomBarChart(ndx);
+    makeEquipmentBarChart(ndx);
+    makeOccupancyPieChart(ndx);
+    makeDaysOfWeekRowChart(ndx);
+    makeHourlyBarChart(ndx);
 
-    //Group for daysOfWeekRowChart
-    var kW2 = daysOfWeek.group().reduceSum(function(d) {
-      return d.value;
-    });
+    var heatArr = []; //Array for the heat map key
+    makeHeatMap(ndx);
 
-    //Dimension and groups for roomBarChart
-    var rooms = ndx.dimension(function(d) {
-      sumCost += d.cost;       //Calculates the total cost to write to html page
-      sumKw += d.value;        //Calculates the total usage to write to html page
-      ratio = sumKw / sumCost; //This assumes that the cost and usage are linear
-
-      return d.index;
-    });
-
-    var kWOccupiedData = rooms.group().reduceSum(function(d) {
-      return d.valueOcc;
-    });
-
-    var kWSemiData = rooms.group().reduceSum(function(d) {
-      return d.valueSemi;
-    });
-
-    var kWOffHourData = rooms.group().reduceSum(function(d) {
-      return d.valueOff;
-    });
-
-    //Dimension and groups for equipmentBarChart
-    var roomsE = ndx.dimension(function(d) {
-      return d.indexE;
-    });
-
-    var kWEOccupiedData = roomsE.group().reduceSum(function(d) {
-      return d.valueEOcc;
-    });
-
-    var kWESemiData = roomsE.group().reduceSum(function(d) {
-      return d.valueESemi;
-    });
-
-    var kWEOffHourData = roomsE.group().reduceSum(function(d) {
-      return d.valueEOff;
-    });
-
-    //Bar Chart - rooms
-    roomBarChart = dc.barChart("#roomBarChart");
-    
-    roomBarChart.width(width / 2)
-          .height(0.4775 * (width / 2))
-          .margins({top: 10, right: 40, bottom: 30, left: 40})
-          .dimension(rooms)
-          .group(kWOccupiedData, "Working hours")
-          .stack(kWSemiData)
-          .stack(kWOffHourData)
-          .colors(function(d) {     //Colors based on type of hour
-            if (d == 1) {
-              return "#0092cc";
-            } else if (d == 2) {
-              return "#00b4b5";
-            } else {
-              return "#0b50c2";
-            }
-          })
-          .elasticY(true)
-          .gap(1)
-          .x(d3.scale.ordinal().domain([0, roomArray.length - 1]))
-          .xUnits(dc.units.ordinal)
-          .yAxisLabel("kWh")
-          .xAxisLabel("Room")
-          .renderHorizontalGridLines(true)
-          .transitionDuration(700);
-
-    //Make the x-axis ticks display the room name
-    roomBarChart.xAxis().tickFormat(function (v) {
-      return roomArray[v];
-    });
-    
-    //Bar Chart - equipment
-    equipmentBarChart = dc.barChart("#equipBarChart");
-    
-    equipmentBarChart.width(width / 2)
-          .height(0.4775 * (width / 2))
-          .margins({top: 10, right: 40, bottom: 30, left: 40})
-          .dimension(roomsE)
-          .group(kWEOccupiedData)
-          .stack(kWESemiData)
-          .stack(kWEOffHourData)
-          .colors(function(d) {
-            if (d == 1) {         //Colors based on type of hour
-              return "#0092cc";
-            } else if (d == 2) {
-              return "#00b4b5";
-            } else {
-              return "#0b50c2";
-            }
-          })
-          .elasticY(true)
-          .gap(1)
-          .x(d3.scale.ordinal().domain([0, equipArray.length - 1]))
-          .xUnits(dc.units.ordinal)
-          .yAxisLabel("kWh")
-          .xAxisLabel("Equipment Type")
-          .renderHorizontalGridLines(true)
-          .transitionDuration(700);
-
-    //Make the x-axis ticks display the equipment type
-    equipmentBarChart.xAxis().tickFormat(function (v) {
-      return equipArray[v];
-    });
-
-    //Row Chart - Days of the week
-    daysOfWeekRowChart = dc.rowChart("#dayRowChart");
-
-    daysOfWeekRowChart.width(width / 2)
-          .height(0.4775 * (width / 2))
-          .margins({top: 10, right: 40, bottom: 30, left: 40})
-          .dimension(daysOfWeek)
-          .group(kW2)
-          .colors(d3.scale.ordinal().domain(["weekday", "weekend"]).range(["#00a1e5", "#00a1e5"]))
-          .colorAccessor(function(d) {
-            if (d.key == 0 || d.key == 6) {
-              return "weekend";
-            }
-            else {
-              return "weekeday";
-            }
-          })
-          .elasticX(true)
-          .gap(1)
-          .x(d3.scale.linear().domain([-1, 8]))
-          .label(function(d) {
-            var day = d.key;
-            switch (day) {
-              case 0:
-                return "Sunday";
-              case 1:
-                return "Monday";
-              case 2:
-                return "Tuesday";
-              case 3:
-                return "Wednesday";
-              case 4:
-                return "Thursday";
-              case 5:
-                return "Friday";
-              case 6:
-                return "Saturday";
-            }
-          })
-          .transitionDuration(700);
-
-    dc.renderAll();
+    makeDataTable(ndx);
 
     /*
 
-    Occupancy
-
-    */
-    //Dimension and group for occupancyPieChart
-    var occupied = ndx.dimension(function(d) {
-      return d.occupancy;
-    });
-
-    var kWOccupied = occupied.group().reduceSum(function(d) {
-      return d.value;
-    });
-
-    //Dimension and group for hourlyBarChart
-    var hour = ndx.dimension(function(d) {
-      return d.hour;
-    });
-
-    var kWHour = hour.group().reduceSum(function(d) {
-      return d.value;
-    });
-
-    //Dimension and group for calculationBarChart
-    var hourCalculate = ndx.dimension(function(d) {
-      return d.hour;
-    });
-
-    var kWHourCalculate = hourCalculate.group().reduceSum(function(d) {
-      return d.value;
-    });
-
-    //Dimension and group for the heat map
-    var hoursDaysHeatmap = ndx.dimension(function(d) {
-      return [d.hour, d.day];
-    });
-
-    var kWHeatmap = hoursDaysHeatmap.group().reduceSum(function(d) {
-      return d.value;
-    });
-
-    //Pie Chart - different types of hours
-    occupancyPieChart = dc.pieChart("#occupancyPieChart");
+    function that builds the room bar chart
     
-    occupancyPieChart.width(width / 2)
-        .height(width / 4.5)
-        .dimension(occupied)
-        .group(kWOccupied)
-        .innerRadius(width / 16)
-        .radius(width / 10)
-        .colors(d3.scale.ordinal().domain(["occupied", "semi", "offHours"]).range(["#0b50c2", "#0092cc", "#00b4b5"]))
-        .colorAccessor(function(d) {
-          if (d.key == 1) {
-            return "occupied";
-          } else if (d.key == 0.5) {
-            return "semi";
-          } else {
-            return "offHours";
-          }
-        })
-        .label(function (d) {
-          if (d.key == 1) {
-            return "Working Hours";
-          } else if (d.key == 0.5) {
-            return "Semi-working Hours";
-          } else {
-            return "Off hours";
-          }
-        })
-        .transitionDuration(700);
+    */
+    function makeRoomBarChart(ndx) {
+      //Dimension and groups for roomBarChart
+      var rooms = ndx.dimension(function(d) {
+        sumCost += d.cost;       //Calculates the total cost to write to html page
+        sumKw += d.value;        //Calculates the total usage to write to html page
+        ratio = sumKw / sumCost; //This assumes that the cost and usage are linear
+
+        return d.index;
+      });
+
+      var kWOccupiedData = rooms.group().reduceSum(function(d) {
+        return d.valueOcc;
+      });
+
+      var kWSemiData = rooms.group().reduceSum(function(d) {
+        return d.valueSemi;
+      });
+
+      var kWOffHourData = rooms.group().reduceSum(function(d) {
+        return d.valueOff;
+      });
+
+      //Bar Chart - rooms
+      roomBarChart = dc.barChart("#roomBarChart");
+      
+      roomBarChart.width(width / 2)
+            .height(0.4775 * (width / 2))
+            .margins({top: 10, right: 40, bottom: 30, left: 40})
+            .dimension(rooms)
+            .group(kWOccupiedData, "Working hours")
+            .stack(kWSemiData)
+            .stack(kWOffHourData)
+            .colors(function(d) {     //Colors based on type of hour
+              if (d == 1) {
+                return "#0092cc";
+              } else if (d == 2) {
+                return "#00b4b5";
+              } else {
+                return "#0b50c2";
+              }
+            })
+            .elasticY(true)
+            .gap(1)
+            .x(d3.scale.ordinal().domain([0, roomArray.length - 1]))
+            .xUnits(dc.units.ordinal)
+            .yAxisLabel("kWh")
+            .xAxisLabel("Room")
+            .renderHorizontalGridLines(true)
+            .transitionDuration(700);
+
+      //Make the x-axis ticks display the room name
+      roomBarChart.xAxis().tickFormat(function (v) {
+        return roomArray[v];
+      });
+
+      dc.renderAll();
+    }
+    
+    /*
+
+    function that builds the equipment bar chart
+    
+    */
+    function makeEquipmentBarChart(ndx) {
+      //Dimension and groups for equipmentBarChart
+      var roomsE = ndx.dimension(function(d) {
+        return d.indexE;
+      });
+
+      var kWEOccupiedData = roomsE.group().reduceSum(function(d) {
+        return d.valueEOcc;
+      });
+
+      var kWESemiData = roomsE.group().reduceSum(function(d) {
+        return d.valueESemi;
+      });
+
+      var kWEOffHourData = roomsE.group().reduceSum(function(d) {
+        return d.valueEOff;
+      });
+
+      //Bar Chart - equipment
+      equipmentBarChart = dc.barChart("#equipBarChart");
+      
+      equipmentBarChart.width(width / 2)
+            .height(0.4775 * (width / 2))
+            .margins({top: 10, right: 40, bottom: 30, left: 40})
+            .dimension(roomsE)
+            .group(kWEOccupiedData)
+            .stack(kWESemiData)
+            .stack(kWEOffHourData)
+            .colors(function(d) {
+              if (d == 1) {         //Colors based on type of hour
+                return "#0092cc";
+              } else if (d == 2) {
+                return "#00b4b5";
+              } else {
+                return "#0b50c2";
+              }
+            })
+            .elasticY(true)
+            .gap(1)
+            .x(d3.scale.ordinal().domain([0, equipArray.length - 1]))
+            .xUnits(dc.units.ordinal)
+            .yAxisLabel("kWh")
+            .xAxisLabel("Equipment Type")
+            .renderHorizontalGridLines(true)
+            .transitionDuration(700);
+
+      //Make the x-axis ticks display the equipment type
+      equipmentBarChart.xAxis().tickFormat(function (v) {
+        return equipArray[v];
+      });
+
+      dc.renderAll();
+    }
+
+    /*
+    
+    function that builds the days of the week row chart
+    
+    */
+    function makeDaysOfWeekRowChart(ndx) {
+      //Dimension for daysOfWeekRowChart
+      var daysOfWeek = ndx.dimension(function(d) {
+        return d.day;
+      });
+
+      //Group for daysOfWeekRowChart
+      var kW2 = daysOfWeek.group().reduceSum(function(d) {
+        return d.value;
+      });
+
+      //Row Chart - Days of the week
+      daysOfWeekRowChart = dc.rowChart("#dayRowChart");
+
+      daysOfWeekRowChart.width(width / 2)
+            .height(0.4775 * (width / 2))
+            .margins({top: 10, right: 40, bottom: 30, left: 40})
+            .dimension(daysOfWeek)
+            .group(kW2)
+            .colors(d3.scale.ordinal().domain(["weekday", "weekend"]).range(["#00a1e5", "#00a1e5"]))
+            .colorAccessor(function(d) {
+              if (d.key == 0 || d.key == 6) {
+                return "weekend";
+              }
+              else {
+                return "weekeday";
+              }
+            })
+            .elasticX(true)
+            .gap(1)
+            .x(d3.scale.linear().domain([-1, 8]))
+            .label(function(d) {
+              var day = d.key;
+              switch (day) {
+                case 0:
+                  return "Sunday";
+                case 1:
+                  return "Monday";
+                case 2:
+                  return "Tuesday";
+                case 3:
+                  return "Wednesday";
+                case 4:
+                  return "Thursday";
+                case 5:
+                  return "Friday";
+                case 6:
+                  return "Saturday";
+              }
+            })
+            .transitionDuration(700);
+
+      dc.renderAll();
+    }
+
+    /*
+
+    function that builds the occupancy pie chart
+    
+    */
+    function makeOccupancyPieChart(ndx) {
+      //Dimension and group for occupancyPieChart
+      var occupied = ndx.dimension(function(d) {
+        return d.occupancy;
+      });
+
+      var kWOccupied = occupied.group().reduceSum(function(d) {
+        return d.value;
+      });
+
+      //Pie Chart - different types of hours
+      occupancyPieChart = dc.pieChart("#occupancyPieChart");
+      
+      occupancyPieChart.width(width / 2)
+          .height(width / 4.5)
+          .dimension(occupied)
+          .group(kWOccupied)
+          .innerRadius(width / 16)
+          .radius(width / 10)
+          .colors(d3.scale.ordinal().domain(["occupied", "semi", "offHours"]).range(["#0b50c2", "#0092cc", "#00b4b5"]))
+          .colorAccessor(function(d) {
+            if (d.key == 1) {
+              return "occupied";
+            } else if (d.key == 0.5) {
+              return "semi";
+            } else {
+              return "offHours";
+            }
+          })
+          .label(function (d) {
+            if (d.key == 1) {
+              return "Working Hours";
+            } else if (d.key == 0.5) {
+              return "Semi-working Hours";
+            } else {
+              return "Off hours";
+            }
+          })
+          .transitionDuration(700);
+
+      dc.renderAll();
+    }
 
     //If the window is less than 992px, then reajdust the width and height of the charts
     if ($(window).width() <= 992) {      
@@ -534,31 +548,264 @@ crossfilterMagic.generateFromURI = function (uri, client_name, location_name) {
                 .radius(width / 5)
     }
 
-    //Bar Chart - Hours of the week
-    hourlyBarChart = dc.barChart("#hourRowChart");
-    
-    hourlyBarChart.width(width)
-          .height(200)
-          .margins({top: 10, right: 50, bottom: 30, left: 40})
-          .dimension(hour)
-          .group(kWHour)
-          .round(function(n) { return Math.floor(n) + 0.5 })
-          .alwaysUseRounding(true)
-          .elasticY(true)
-          .centerBar(true)
-          .gap(1)
-          .x(d3.scale.linear().domain([-1, 24]))
-          .yAxisLabel("kWh")
-          .xAxisLabel("Time")
-          .renderHorizontalGridLines(true)
-          .transitionDuration(700);
+    /*
 
-    //Update x-axis ticks to display the hour
-    hourlyBarChart.xAxis().tickFormat(function (v) {
-      if (v == -1 || v == 24) {
-        return "";
+    function that builds the hour bar chart
+    
+    */
+    function makeHourlyBarChart(ndx) {
+      //Dimension and group for hourlyBarChart
+      var hour = ndx.dimension(function(d) {
+        return d.hour;
+      });
+
+      var kWHour = hour.group().reduceSum(function(d) {
+        return d.value;
+      });
+
+      //Bar Chart - Hours of the week
+      hourlyBarChart = dc.barChart("#hourRowChart");
+      
+      hourlyBarChart.width(width)
+            .height(200)
+            .margins({top: 10, right: 50, bottom: 30, left: 40})
+            .dimension(hour)
+            .group(kWHour)
+            .round(function(n) { return Math.floor(n) + 0.5 })
+            .alwaysUseRounding(true)
+            .elasticY(true)
+            .centerBar(true)
+            .gap(1)
+            .x(d3.scale.linear().domain([-1, 24]))
+            .yAxisLabel("kWh")
+            .xAxisLabel("Time")
+            .renderHorizontalGridLines(true)
+            .transitionDuration(700);
+
+      //Update x-axis ticks to display the hour
+      hourlyBarChart.xAxis().tickFormat(function (v) {
+        if (v == -1 || v == 24) {
+          return "";
+        }
+        return moment().hour(v).format("h a");
+      });
+
+      dc.renderAll();
+    }
+
+    /*
+
+    function that makes the heat map
+
+    */
+    function makeHeatMap(ndx) {
+      //Dimension and group for the heat map
+      var hoursDaysHeatmap = ndx.dimension(function(d) {
+        return [d.hour, d.day];
+      });
+
+      var kWHeatmap = hoursDaysHeatmap.group().reduceSum(function(d) {
+        return d.value;
+      });
+
+      var maxHeat = 0;      //Max value on the heat map
+      var minHeat = 10000;  //Min value on the heat map
+      var bool = true;
+
+      heatmapChart = dc.heatMap("#heatmap");
+
+      //Color domain for heatmap
+      var heatColorMapping = function(d) {
+        //If a value in the heatmap is insignificant, then don't show it
+        if (d < 0.1) {
+          return d3.scale.linear().domain([0, 0]).range(["rgba(235, 234, 237, 0.1)", "rgba(235, 234, 237, 0.1)"])(d);
+        }
+        //Else give it a color between blue and red
+        else {
+          return d3.scale.linear().domain([minHeat, maxHeat]).range(["blue", "red"])(d);
+        }
+      };
+
+      heatColorMapping.domain = function() {
+        return [minHeat, maxHeat];
+      };
+
+      heatmapChart.width(width)
+              .height(27 * 10 + 40)
+              .dimension(hoursDaysHeatmap)
+              .group(kWHeatmap)
+              .colorAccessor(function(d) {
+                if (bool) {
+                  if (d.value > maxHeat) {
+                    maxHeat = d.value;
+                  }
+                  if (d.value < minHeat) {
+                    minHeat = d.value;
+                  }
+                  if (d.key[0] == 9 && d.key[1] == 6) {
+                    bool = false
+                  }
+                }
+                return d.value;
+              })
+              .keyAccessor(function(d) { return d.key[0]; })
+              .valueAccessor(function(d) { return d.key[1]; })
+              .colsLabel(function(d){
+                return moment().hour(d).format("h a");
+              })
+              .rowsLabel(function(d) {
+                return moment().day(d).format("ddd")
+              })
+              .transitionDuration(0)
+              .colors(heatColorMapping)
+              .calculateColorDomain();
+
+      //Make heatmap data points square instead of circular
+      heatmapChart.xBorderRadius(0);
+      heatmapChart.yBorderRadius(0);
+
+      dc.renderAll();
+
+      makeHeatMapKey(maxHeat, minHeat);
+    }
+
+    /*
+    This is a hack, but I make an array of length 24 with the first element
+    being the min value in the heatmap and the last element having the max value
+    in the heatmap. The elements in between are spaced evenly. Through this array
+    I will create a heatmap key.
+    */
+    function makeHeatMapKey(maxHeat, minHeat) {
+      var rangeHeat = maxHeat - minHeat;
+      // var heatArr = [];
+      for (var h = 0; h < 24; h++) {
+        heatArr.push({
+          val: minHeat + h / 23 * rangeHeat,
+          index: h
+        });
       }
-      return moment().hour(v).format("h a");
+
+      //Make a new crossfilter so the heat map key doesn't filter with the rest of the charts
+      var ndx1 = crossfilter(heatArr);
+
+      var keyHeatmap = ndx1.dimension(function(d) {
+        return [d.index, 1];
+      });
+
+      var keyHeatmapGroup = keyHeatmap.group().reduceSum(function(d) {
+        return d.val;
+      });
+
+      heatmapKey = dc.heatMap("#heatmapKey");
+
+      var heatColorMappingKey = function(d) {
+        if (d < 0.1) {
+          return d3.scale.linear().domain([0, 0]).range(["rgba(235, 234, 237, 0.1)", "rgba(235, 234, 237, 0.1)"])(d);
+        }
+        else {
+          return d3.scale.linear().domain([minHeat, maxHeat]).range(["blue", "red"])(d);
+        }
+      };
+
+      heatColorMappingKey.domain = function() {
+        return [minHeat, maxHeat];
+      };
+
+      heatmapKey.width(width)
+              .height(80)
+              .dimension(keyHeatmap)
+              .group(keyHeatmapGroup)
+              .colorAccessor(function(d) {
+                return d.value;
+              })
+              .keyAccessor(function(d) { return d.key[0]; })
+              .valueAccessor(function(d) { return d.key[1]; })
+              .colsLabel(function(d){
+                return heatArr[d].val.toFixed(0);
+              })
+              .rowsLabel(function(d) {
+                return "Key";
+              })
+              .transitionDuration(0)
+              .colors(heatColorMappingKey)
+              .calculateColorDomain();
+
+      heatmapKey.xBorderRadius(0);
+      heatmapKey.yBorderRadius(0);
+
+      dc.renderAll();
+    }
+
+    //Show less x-axis labels on the heat map if the screen is small
+    if (window.innerWidth <= 760) {
+      heatmapChart.colsLabel(function(d) {
+        if (d % 2 == 0) {
+          return moment().hour(d).format("h a");
+        }
+        else {
+          return "";
+        }
+      })
+
+      heatmapKey.colsLabel(function(d, i) {
+        if (d % 2 == 0) {
+          return heatArr[d].val.toFixed(0);
+        }
+        else {
+          return "";
+        }
+      })
+    }
+
+    /*
+
+    function that makes the data table
+
+    */
+    function makeDataTable(ndx) {
+      //Dimension used for data table
+      var rooms = ndx.dimension(function(d) {
+        return d.index;
+      });
+
+      //Data table
+      dataTable = dc.dataTable("#dataTable")
+
+      dataTable
+          .dimension(rooms)
+          .group(function(d) {
+              return "";
+          })
+          .size([Infinity])
+          .columns([
+            function(d) { return roomArray[d.index] + " - " + equipArray[d.indexE]; },
+            function(d) { return d.value.toFixed(2); },
+            function(d) { return (d.value / sumKw * 100).toFixed(2); },
+            function(d) { return d.cost.toFixed(2); },
+            function(d) { return moment().hour(d.hour).format("h a"); },
+            function(d) { return moment().day(d.day).format("dddd"); }
+          ])
+          .sortBy(function (d) {
+            return d.value;
+          })
+          .order(d3.descending);
+
+      dc.renderAll();
+    }
+
+    /* 
+
+    Calculations and writing to html
+
+    */
+
+    //Dimension and group for calculationBarChart
+    var hourCalculate = ndx.dimension(function(d) {
+      return d.hour;
+    });
+
+    var kWHourCalculate = hourCalculate.group().reduceSum(function(d) {
+      return d.value;
     });
 
     //Bar Chart for Calculation and writing to html page (this chart is modeled off of hourlyBarChart and is hidden on the page)
@@ -592,174 +839,15 @@ crossfilterMagic.generateFromURI = function (uri, client_name, location_name) {
           })
           .x(d3.scale.linear().domain([-1, 24]))
 
-    /* Heatmap */
-    var maxHeat = 0;      //Max value on the heat map
-    var minHeat = 10000;  //Min value on the heat map
-    var bool = true;
 
-    var heatmapChart = dc.heatMap("#heatmap");
 
-    //Color domain for heatmap
-    var heatColorMapping = function(d) {
-      //If a value in the heatmap is insignificant, then don't show it
-      if (d < 0.1) {
-        return d3.scale.linear().domain([0, 0]).range(["rgba(235, 234, 237, 0.1)", "rgba(235, 234, 237, 0.1)"])(d);
-      }
-      //Else give it a color between blue and red
-      else {
-        return d3.scale.linear().domain([minHeat, maxHeat]).range(["blue", "red"])(d);
-      }
-    };
 
-    heatColorMapping.domain = function() {
-      return [minHeat, maxHeat];
-    };
 
-    heatmapChart.width(width)
-            .height(27 * 10 + 40)
-            .dimension(hoursDaysHeatmap)
-            .group(kWHeatmap)
-            .colorAccessor(function(d) {
-              if (bool) {
-                if (d.value > maxHeat) {
-                  maxHeat = d.value;
-                }
-                if (d.value < minHeat) {
-                  minHeat = d.value;
-                }
-                if (d.key[0] == 9 && d.key[1] == 6) {
-                  bool = false
-                }
-              }
-              return d.value;
-            })
-            .keyAccessor(function(d) { return d.key[0]; })
-            .valueAccessor(function(d) { return d.key[1]; })
-            .colsLabel(function(d){
-              return moment().hour(d).format("h a");
-            })
-            .rowsLabel(function(d) {
-              return moment().day(d).format("ddd")
-            })
-            .transitionDuration(0)
-            .colors(heatColorMapping)
-            .calculateColorDomain();
 
-    //Make heatmap data points square instead of circular
-    heatmapChart.xBorderRadius(0);
-    heatmapChart.yBorderRadius(0);
 
-    //Heatmap -- Key
-    /*
-    This is a hack, but I make an array of length 24 with the first element
-    being the min value in the heatmap and the last element having the max value
-    in the heatmap. The elements in between are spaced evenly. Through this array
-    I will create a heatmap key.
-    */
-    var rangeHeat = maxHeat - minHeat;
-    var heatArr = [];
-    for (var h = 0; h < 24; h++) {
-      heatArr.push({
-        val: minHeat + h / 23 * rangeHeat,
-        index: h
-      });
-    }
 
-    var ndx1 = crossfilter(heatArr);
 
-    var keyHeatmap = ndx1.dimension(function(d) {
-      return [d.index, 1];
-    });
-
-    var keyHeatmapGroup = keyHeatmap.group().reduceSum(function(d) {
-      return d.val;
-    });
-
-    var heatmapKey = dc.heatMap("#heatmapKey");
-
-    var heatColorMappingKey = function(d) {
-      if (d < 0.1) {
-        return d3.scale.linear().domain([0, 0]).range(["rgba(235, 234, 237, 0.1)", "rgba(235, 234, 237, 0.1)"])(d);
-      }
-      else {
-        return d3.scale.linear().domain([minHeat, maxHeat]).range(["blue", "red"])(d);
-      }
-    };
-
-    heatColorMappingKey.domain = function() {
-      return [minHeat, maxHeat];
-    };
-
-    heatmapKey.width(width)
-            .height(80)
-            .dimension(keyHeatmap)
-            .group(keyHeatmapGroup)
-            .colorAccessor(function(d) {
-              return d.value;
-            })
-            .keyAccessor(function(d) { return d.key[0]; })
-            .valueAccessor(function(d) { return d.key[1]; })
-            .colsLabel(function(d){
-              return heatArr[d].val.toFixed(0);
-            })
-            .rowsLabel(function(d) {
-              return "Key";
-            })
-            .transitionDuration(0)
-            .colors(heatColorMappingKey)
-            .calculateColorDomain();
-
-    heatmapKey.xBorderRadius(0);
-    heatmapKey.yBorderRadius(0);
-
-    //Show less x-axis labels on the heat map if the screen is small
-    if (window.innerWidth <= 760) {
-      heatmapChart.colsLabel(function(d) {
-        if (d % 2 == 0) {
-          return moment().hour(d).format("h a");
-        }
-        else {
-          return "";
-        }
-      })
-
-      heatmapKey.colsLabel(function(d, i) {
-        if (d % 2 == 0) {
-          return heatArr[d].val.toFixed(0);
-        }
-        else {
-          return "";
-        }
-      })
-    }
-
-    //Data table
-    dataTable = dc.dataTable("#dataTable")
-
-    dataTable
-        .dimension(rooms)
-        .group(function(d) {
-            return "";
-        })
-        .size([Infinity])
-        .columns([
-          function(d) { return roomArray[d.index] + " - " + equipArray[d.indexE]; },
-          function(d) { return d.value.toFixed(2); },
-          function(d) { return (d.value / sumKw * 100).toFixed(2); },
-          function(d) { return d.cost.toFixed(2); },
-          function(d) { return moment().hour(d.hour).format("h a"); },
-          function(d) { return moment().day(d.day).format("dddd"); }
-        ])
-        .sortBy(function (d) {
-          return d.value;
-        })
-        .order(d3.descending);
-
-    /* 
-
-    Calculations and writing to html
-
-    */
+    
     //Days of week
     var daysOfWeek1 = ndx.dimension(function(d) {
       return d.day;
