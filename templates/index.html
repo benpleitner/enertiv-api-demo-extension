@@ -5,16 +5,17 @@
 		<link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.png') }}">
 		<script type="text/javascript" src="{{ url_for('static', filename='js/lib/d3.v3.min.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/basicTree.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/lib/spin.min.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/lib/crossfilter.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/lib/dc.js') }}"></script>	
 		<script type="text/javascript" src="{{ url_for('static', filename='js/crossfilterMagic.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/lib/moment.js') }}"></script>
-    	<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
 	 	<script src="http://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.0-rc2/js/bootstrap.min.js"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/lib/jquery.quickfit.js') }}"></script>
 
 		<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='stylesheets/lib/bootstrap.min.css') }}">
-    	<link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/lib/dc.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/lib/dc.css') }}">
 		<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='stylesheets/basic.css') }}">
 		<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='stylesheets/sass/screen.css') }}">
 
@@ -56,114 +57,121 @@
 			</div>
 		</nav>
 
-		<ul class="list-group" id="filtered">
-		  <h5 id="filteredText">What you have filtered</h5>
-			<li class="list-group-item"><span id="sublocationNav"></span></li>
-			<li class="list-group-item"><span id="equipmentNav"></span></li>
-			<li class="list-group-item"><span id="dayNav"></span></li>
-			<li class="list-group-item"><span id="hourTypeNav"></span></li>
-		</ul>
+		<div class="content">
+			<ul class="list-group" id="filtered">
+			  <h5 id="filteredText">What you have filtered</h5>
+				<li class="list-group-item"><span id="sublocationNav"></span></li>
+				<li class="list-group-item"><span id="equipmentNav"></span></li>
+				<li class="list-group-item"><span id="dayNav"></span></li>
+				<li class="list-group-item"><span id="hourTypeNav"></span></li>
+			</ul>
+		</div>
 
 		<div class="container">
 			<div class="well center" id="well">
-				<div>
-					<h2>Usage for <span id="clientName"></span>: <span id="locationName"></span></h2>
-					<h3><span id="fromTime"></span><span id="toTime"></span></h3>
 
-					<input id="e1" name="e1">
+				<div id="spin"></div>
 
-				</div>
+				<div class="content">
+					<div>
+						<h2>Usage for <span id="clientName"></span>: <span id="locationName"></span></h2>
+						<h3><span id="fromTime"></span><span id="toTime"></span></h3>
 
-      	<div id="rButton">
-      		<a class="reset btn-geckoboard btn-outline btn-lg" href="javascript:dc.filterAll(); dc.redrawAll();">reset</a>
-      	</div>
+						<input id="e1" name="e1">
 
-      	<div id="summaryText">
-      		<span id="summaryTextA"></span>
-      		<span id="summaryTextB"></span>
-      	</div>
-
-      	<div id="selectedText">
-      		<span id="summaryText1"></span>
-      		<span id="summaryText2"></span>
-      	</div>
-
-				<!-- <div id="stats">
-        	<h4>What you have filtered</h4>
-        	<div class="btn-group btn-breadcrumb" id="navigationText">
-            <a href="#" class="btn btn-default" id="sublocationNav"></a>
-          <a href="#" class="btn btn-default" id="equipmentNav"></a>
-          <a href="#" class="btn btn-default" id="dayNav"></a>
-          <a href="#" class="btn btn-default" id="hourTypeNav"></a>
-        	</div>
-      	</div> -->
-
-      	<div id="legend">
-        	<svg width="20" height="20">
-						<rect x="0" y="0" width="50" height="50" fill="#0b50c2"/>
-					</svg>
-					<span class="legendText">Working hours</span>
-					<svg width="20" height="20">
-						<rect x="0" y="0" width="50" height="50" fill="#0092cc"/>
-					</svg>
-					<span class="legendText">Semi-working hours</span>
-					<svg width="20" height="20">
-						<rect x="0" y="0" width="50" height="50" fill="#00b4b5"/>
-					</svg>
-					<span class="legendText last">Off hours</span>
-      	</div>
-
-				<div class="sameLineBarChart">
-					<div id="roomBarChart">
-						<h4>Locations</h4>
 					</div>
 
-					<div id="equipBarChart">
-						<h4>Equipment types</h4>
+	      	<div id="rButton">
+	      		<a class="reset btn-geckoboard btn-outline btn-lg" href="javascript:dc.filterAll(); dc.redrawAll();">reset</a>
+	      	</div>
+
+	      	<div id="summaryText">
+	      		<span id="summaryTextA"></span>
+	      		<span id="summaryTextB"></span>
+	      	</div>
+
+	      	<div id="selectedText">
+	      		<span id="summaryText1"></span>
+	      		<span id="summaryText2"></span>
+	      	</div>
+
+					<!-- <div id="stats">
+	        	<h4>What you have filtered</h4>
+	        	<div class="btn-group btn-breadcrumb" id="navigationText">
+	            <a href="#" class="btn btn-default" id="sublocationNav"></a>
+	          <a href="#" class="btn btn-default" id="equipmentNav"></a>
+	          <a href="#" class="btn btn-default" id="dayNav"></a>
+	          <a href="#" class="btn btn-default" id="hourTypeNav"></a>
+	        	</div>
+	      	</div> -->
+
+	      	<div id="legend">
+	        	<svg width="20" height="20">
+							<rect x="0" y="0" width="50" height="50" fill="#0b50c2"/>
+						</svg>
+						<span class="legendText">Working hours</span>
+						<svg width="20" height="20">
+							<rect x="0" y="0" width="50" height="50" fill="#0092cc"/>
+						</svg>
+						<span class="legendText">Semi-working hours</span>
+						<svg width="20" height="20">
+							<rect x="0" y="0" width="50" height="50" fill="#00b4b5"/>
+						</svg>
+						<span class="legendText last">Off hours</span>
+	      	</div>
+
+					<div class="sameLineBarChart">
+						<div id="roomBarChart">
+							<h4>Locations</h4>
+						</div>
+
+						<div id="equipBarChart">
+							<h4>Equipment types</h4>
+						</div>
 					</div>
-				</div>
-				
-				<div class="sameLine">
-					<div id="occupancyPieChart">
-						<h4 id="typeOfHour">Type of hour</h4>
+					
+					<div class="sameLine">
+						<div id="occupancyPieChart">
+							<h4 id="typeOfHour">Type of hour</h4>
+						</div>
+
+						<div id="dayRowChart">
+							<h4>Days of the week</h4>
+						</div>
 					</div>
 
-					<div id="dayRowChart">
-						<h4>Days of the week</h4>
+					<div id="hourRowChart">
+						<h4>Usage by time of the day</h4>
 					</div>
+
+					<h4>Heat map display of energy usage (kWh)</h4>
+
+					<!-- Hidden elements for calculations and html writing from javaScript -->
+					<div id="calculations"></div>
+					<div id="hiddenRowChart"></div>
+					<div id="hiddenBarChartRoom"></div>
+					<div id="hiddenBarChartEquip"></div>
+					<div id="hiddenPieChart"></div>
+
+					<div id="heatmap"></div>
+
+					<div id="noHover">
+						<div id="heatmapKey"></div>
+					</div>
+
+					<table id="dataTable" width="100%">
+						<thead>
+		          <tr>
+		            <th>Room - Equipment</th>
+		            <th>Usage (kWh)</th>
+		            <th>Percent of total usage (%)</th>
+		            <th>Cost ($)</th>
+		            <th>Hour</th>
+		            <th>Day</th>
+		          </tr>
+				    </thead>
+					</table>
 				</div>
-
-				<div id="hourRowChart">
-					<h4>Usage by time of the day</h4>
-				</div>
-
-				<h4>Heat map display of energy usage (kWh)</h4>
-
-				<!-- Hidden elements for calculations and html writing from javaScript -->
-				<div id="calculations"></div>
-				<div id="hiddenRowChart"></div>
-				<div id="hiddenBarChartRoom"></div>
-				<div id="hiddenBarChartEquip"></div>
-				<div id="hiddenPieChart"></div>
-
-				<div id="heatmap"></div>
-
-				<div id="noHover">
-					<div id="heatmapKey"></div>
-				</div>
-
-				<table id="dataTable" width="100%">
-					<thead>
-	          <tr>
-	            <th>Room - Equipment</th>
-	            <th>Usage (kWh)</th>
-	            <th>Percent of total usage (%)</th>
-	            <th>Cost ($)</th>
-	            <th>Hour</th>
-	            <th>Day</th>
-	          </tr>
-			    </thead>
-				</table>
 			</div>
 			<script type="text/javascript" data-toggle="tooltip" title="hats" src="{{ url_for('static', filename='js/demo.js') }}"></script>
 	  </div>

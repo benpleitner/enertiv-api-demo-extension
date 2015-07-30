@@ -89,8 +89,34 @@ crossfilterMagic.generateFromOccupancyURI = function (uri) {
 
 //Get the energy usage and cost data
 crossfilterMagic.generateFromURI = function (uri, client_name, location_name) {
-  d3.json(uri, function(error, rawData) {
 
+  //Start the spinner and hide the content
+  var opts = {
+    lines: 13, // The number of lines to draw
+    length: 20, // The length of each line
+    width: 10, // The line thickness
+    radius: 30, // The radius of the inner circle
+    corners: 1, // Corner roundness (0..1)
+    rotate: 0, // The rotation offset
+    direction: 1, // 1: clockwise, -1: counterclockwise
+    color: '#03b7f9', // #rgb or #rrggbb or array of colors
+    speed: 1, // Rounds per second
+    trail: 60, // Afterglow percentage
+    shadow: false, // Whether to render a shadow
+    hwaccel: false, // Whether to use hardware acceleration
+    className: 'spinner', // The CSS class to assign to the spinner
+    zIndex: 2e9, // The z-index (defaults to 2000000000)
+    top: '50%', // Top position relative to parent
+    left: '50%' // Left position relative to parent
+  };
+
+  $(".content").css("display", "none");
+  $(".well").css("height", "85%");
+
+  var target = document.getElementById("spin");
+  crossfilterMagic.spinner = new Spinner(opts).spin(target);
+
+  d3.json(uri, function(error, rawData) {
     //Totals
     var totals = {},        //Keep track of the usage (kWh) per room
         roomData = [],      //Get room data in graph format (flattened)
@@ -1044,6 +1070,11 @@ crossfilterMagic.generateFromURI = function (uri, client_name, location_name) {
     }
 
     dc.renderAll();
+
+    //Stop the spinner and show the content
+    crossfilterMagic.spinner.stop();
+    $(".content").css("display", "initial");
+    $(".well").css("height", "initial");
 
     //Helper function that adds an x-axis label to the row chart
     function addXAxis(chartToUpdate, displayText) {
