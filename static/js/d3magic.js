@@ -371,19 +371,19 @@ crossfilterMagic.generateFromURI = function (uri, client_name, location_name) {
     */
     function makeEquipmentBarChart(ndx) {
       //Dimension and groups for equipmentBarChart
-      var roomsE = ndx.dimension(function(d) {
+      var equipment = ndx.dimension(function(d) {
         return d.indexE;
       });
 
-      var kWEOccupiedData = roomsE.group().reduceSum(function(d) {
+      var kWEOccupiedData = equipment.group().reduceSum(function(d) {
         return d.valueEOcc;
       });
 
-      var kWESemiData = roomsE.group().reduceSum(function(d) {
+      var kWESemiData = equipment.group().reduceSum(function(d) {
         return d.valueESemi;
       });
 
-      var kWEOffHourData = roomsE.group().reduceSum(function(d) {
+      var kWEOffHourData = equipment.group().reduceSum(function(d) {
         return d.valueEOff;
       });
 
@@ -393,7 +393,7 @@ crossfilterMagic.generateFromURI = function (uri, client_name, location_name) {
       equipmentBarChart.width(width / 2)
             .height(0.4775 * (width / 2))
             .margins({top: 10, right: 40, bottom: 30, left: 40})
-            .dimension(roomsE)
+            .dimension(equipment)
             .group(kWEOccupiedData)
             .stack(kWESemiData)
             .stack(kWEOffHourData)
@@ -435,7 +435,7 @@ crossfilterMagic.generateFromURI = function (uri, client_name, location_name) {
       });
 
       //Group for daysOfWeekRowChart
-      var kW2 = daysOfWeek.group().reduceSum(function(d) {
+      var kW = daysOfWeek.group().reduceSum(function(d) {
         return d.value;
       });
 
@@ -446,7 +446,7 @@ crossfilterMagic.generateFromURI = function (uri, client_name, location_name) {
             .height(0.4775 * (width / 2))
             .margins({top: 10, right: 40, bottom: 30, left: 40})
             .dimension(daysOfWeek)
-            .group(kW2)
+            .group(kW)
             .colors(d3.scale.ordinal().domain(["weekday", "weekend"]).range(["#00a1e5", "#00a1e5"]))
             .colorAccessor(function(d) {
               if (d.key == 0 || d.key == 6) {
@@ -798,223 +798,250 @@ crossfilterMagic.generateFromURI = function (uri, client_name, location_name) {
     Calculations and writing to html
 
     */
+    calculateSelectedText(ndx);
+    writeSelectedRooms(ndx);
+    writeSelectedEquipment(ndx);
+    writeDaysSelected(ndx);
+    writeTypeOfHoursSelected(ndx);
 
-    //Dimension and group for calculationBarChart
-    var hourCalculate = ndx.dimension(function(d) {
-      return d.hour;
-    });
+    /*
+  
+    function that calculates the selected text
+    this chart is modeled off of hourlyBarChart and is hidden on the page
 
-    var kWHourCalculate = hourCalculate.group().reduceSum(function(d) {
-      return d.value;
-    });
+    */
+    function calculateSelectedText(ndx) {
+      //Dimension and group for calculationBarChart
+      var hourCalculate = ndx.dimension(function(d) {
+        return d.hour;
+      });
 
-    //Bar Chart for Calculation and writing to html page (this chart is modeled off of hourlyBarChart and is hidden on the page)
-    caclulationBarChart = dc.barChart("#calculations");
-    
-    caclulationBarChart.width(1100)
-          .height(200)
-          .dimension(hourCalculate)
-          .group(kWHourCalculate)
-          .valueAccessor(function(p) {
-            if (p.key == 0) {
-              selectedKw = 0;
-              selectedKw += p.value;
-            } else {
-              selectedKw += p.value;
-            }
-            //Write the crossfiltered/selected cost and usage to the html page
-            if (p.key == 23) {
-              if ((selectedKw / totalKWSum * 100).toFixed(2) != 100) {
-                selectedCostText = "Selected cost: $" + (selectedKw / ratio).toFixed(2) + ",";
-                document.getElementById("summaryText1").innerHTML = selectedCostText;
+      var kWHourCalculate = hourCalculate.group().reduceSum(function(d) {
+        return d.value;
+      });
 
-                selectedKWText = "Selected usage: " + selectedKw.toFixed(2) + " kWh" + " (" + (selectedKw / totalKWSum * 100).toFixed(2) + "%)";
-                document.getElementById("summaryText2").innerHTML = selectedKWText;
+      //Bar Chart for Calculation and writing to html page
+      caclulationBarChart = dc.barChart("#calculations");
+      
+      caclulationBarChart.width(1100)
+            .height(200)
+            .dimension(hourCalculate)
+            .group(kWHourCalculate)
+            .valueAccessor(function(p) {
+              if (p.key == 0) {
+                selectedKw = 0;
+                selectedKw += p.value;
               } else {
-                document.getElementById("summaryText1").innerHTML = "Nothing selected";
-                document.getElementById("summaryText2").innerHTML = "";
+                selectedKw += p.value;
               }
-            }
-            return p.value;
-          })
-          .x(d3.scale.linear().domain([-1, 24]))
+              //Write the crossfiltered/selected cost and usage to the html page
+              if (p.key == 23) {
+                if ((selectedKw / totalKWSum * 100).toFixed(2) != 100) {
+                  selectedCostText = "Selected cost: $" + (selectedKw / ratio).toFixed(2) + ",";
+                  document.getElementById("summaryText1").innerHTML = selectedCostText;
 
-
-
-
-
-
-
-
-
-    
-    //Days of week
-    var daysOfWeek1 = ndx.dimension(function(d) {
-      return d.day;
-    });
-
-    var DOW1 = daysOfWeek1.group().reduceSum(function(d) {
-      return d.day + 1;
-    });
-
-    //Rooms
-    var roomsRC = ndx.dimension(function(d) {
-      return d.index;
-    });
-
-    var roomsRCG = roomsRC.group().reduceSum(function(d) {
-      return d.index + 1;
-    });
-
-    //Equipment
-    var roomsEC = ndx.dimension(function(d) {
-      return d.indexE;
-    });
-
-    var roomsECG = roomsEC.group().reduceSum(function(d) {
-      return d.indexE + 1;
-    });
-
-    //Pie chart
-    var occupiedC = ndx.dimension(function(d) {
-      return d.occupancy;
-    });
-
-    var occupiedCG = occupiedC.group().reduceSum(function(d) {
-      return d.occupancy + 1;
-    });
-
-    //Bar Chart - rooms calculations
-    barChartRC = dc.barChart("#hiddenBarChartRooms");
-    
-    barChartRC.width(800 * 0.75)
-          .height(350 * 0.75)
-          .dimension(roomsRC)
-          .group(roomsRCG)
-          .valueAccessor(function (d) {
-            if (d.key == 0) {
-              textForWriting = "";
-            }
-
-            if (d.value != 0) {
-              textForWriting += roomArray[d.key] + ", ";
-            }
-
-            if (d.key == roomArray.length - 1) {
-              if (textForWriting.split(",").length == roomArray.length + 1 - smallDataArray.length) {
-                selectedRoomsText = "All locations"
-              } else {
-                selectedRoomsText = textForWriting.substring(0, textForWriting.length - 2);
-              }
-              document.getElementById("sublocationNav").innerHTML = selectedRoomsText;
-            }
-            return d.value;
-          })
-          .x(d3.scale.ordinal().domain([0, roomArray.length - 1]))
-          .xUnits(dc.units.ordinal)
-          .transitionDuration(700);
-
-    //Bar Chart - equipment
-    barChartEC = dc.barChart("#hiddenBarChartEquip");
-    barChartEC.width(800 * 0.75)
-          .height(350 * 0.75)
-          .dimension(roomsEC)
-          .group(roomsECG)
-          .valueAccessor(function (d) {
-            if (d.key == 0) {
-              textForWriting = "";
-            }
-
-            if (d.value != 0) {
-              textForWriting += equipArray[d.key] + ", ";
-            }
-
-            if (d.key == equipArray.length - 1) {
-              //Special case for Staples
-              if (client_name == "Staples" && textForWriting.split(",").length == equipArray.length) {
-                selectedEquipText = "All equipment"
-              }
-              else {
-                if (textForWriting.split(",").length == equipArray.length + 1) {
-                  selectedEquipText = "All equipment"
+                  selectedKWText = "Selected usage: " + selectedKw.toFixed(2) + " kWh" + " (" + (selectedKw / totalKWSum * 100).toFixed(2) + "%)";
+                  document.getElementById("summaryText2").innerHTML = selectedKWText;
                 } else {
-                  selectedEquipText = textForWriting.substring(0, textForWriting.length - 2);
+                  document.getElementById("summaryText1").innerHTML = "Nothing selected";
+                  document.getElementById("summaryText2").innerHTML = "";
                 }
               }
-              document.getElementById("equipmentNav").innerHTML = selectedEquipText;
-            }
-            return d.value;
-          })
-          .x(d3.scale.ordinal().domain([0, equipArray.length - 1]))
-          .xUnits(dc.units.ordinal)
-          .transitionDuration(700);
+              return p.value;
+            })
+            .x(d3.scale.linear().domain([-1, 24]))
+    }
 
-    //Array for axis and label text
-    var occupancyArray = []
-    occupancyArray[0] = "Off hours";
-    occupancyArray[1] = "Semi-working hours";
-    occupancyArray[2] = "Working hours";
+    /*
 
-    //Pie Chart - types of hours calculations
-    pieChart14 = dc.pieChart("#hiddenPieChart");
-    
-    pieChart14.width(800 * 0.75)
-        .height(350 * 0.75)
-        .dimension(occupiedC)
-        .group(occupiedCG)
-        .valueAccessor(function (d) {
-          if (d.key == 0) {
-            textForWriting = "";
-          }
+    function that writes which rooms are selected
 
-          if (d.value != 0) {
-            textForWriting += occupancyArray[d.key * 2] + ", ";
-          }
+    */
+    function writeSelectedRooms(ndx) {
+      var roomsCalculation = ndx.dimension(function(d) {
+        return d.index;
+      });
 
-          if (d.key == 1) {
-            if(textForWriting.split(",").length == occupancyArray.length + 1) {
-              selectedTHoursText = "All types of hours"
-            } else {
-              selectedTHoursText = textForWriting.substring(0, textForWriting.length - 2);
-            }
-            
-            document.getElementById("hourTypeNav").innerHTML = selectedTHoursText;
-          }
-          return d.value;
-        })
-        .transitionDuration(700);
+      var roomsGroup = roomsCalculation.group().reduceSum(function(d) {
+        return d.index + 1;
+      });
 
-    //Row Chart - calculations
-    rowChart12 = dc.rowChart("#hiddenRowChart");
+      //Bar Chart - rooms calculations
+      barChart = dc.barChart("#hiddenBarChartRooms");
+      
+      barChart.width(800 * 0.75)
+            .height(350 * 0.75)
+            .dimension(roomsCalculation)
+            .group(roomsGroup)
+            .valueAccessor(function (d) {
+              if (d.key == 0) {
+                textForWriting = "";
+              }
 
-    rowChart12.width(800 * 0.75)
+              if (d.value != 0) {
+                textForWriting += roomArray[d.key] + ", ";
+              }
+
+              if (d.key == roomArray.length - 1) {
+                if (textForWriting.split(",").length == roomArray.length + 1 - smallDataArray.length) {
+                  selectedRoomsText = "All locations"
+                } else {
+                  selectedRoomsText = textForWriting.substring(0, textForWriting.length - 2);
+                }
+                document.getElementById("sublocationNav").innerHTML = selectedRoomsText;
+              }
+              return d.value;
+            })
+            .x(d3.scale.ordinal().domain([0, roomArray.length - 1]))
+            .xUnits(dc.units.ordinal)
+            .transitionDuration(700);
+    }
+
+    /*
+
+    function that writes which equipment types are selected
+
+    */
+    function writeSelectedEquipment(ndx) {
+      var equipmentCalculation = ndx.dimension(function(d) {
+        return d.indexE;
+      });
+
+      var equipmentGroup = equipmentCalculation.group().reduceSum(function(d) {
+        return d.indexE + 1;
+      });
+
+      //Bar Chart - equipment
+      barChart = dc.barChart("#hiddenBarChartEquip");
+      barChart.width(800 * 0.75)
+            .height(350 * 0.75)
+            .dimension(equipmentCalculation)
+            .group(equipmentGroup)
+            .valueAccessor(function (d) {
+              if (d.key == 0) {
+                textForWriting = "";
+              }
+
+              if (d.value != 0) {
+                textForWriting += equipArray[d.key] + ", ";
+              }
+
+              if (d.key == equipArray.length - 1) {
+                //Special case for Staples
+                if (client_name == "Staples" && textForWriting.split(",").length == equipArray.length) {
+                  selectedEquipText = "All equipment"
+                }
+                else {
+                  if (textForWriting.split(",").length == equipArray.length + 1) {
+                    selectedEquipText = "All equipment"
+                  } else {
+                    selectedEquipText = textForWriting.substring(0, textForWriting.length - 2);
+                  }
+                }
+                document.getElementById("equipmentNav").innerHTML = selectedEquipText;
+              }
+              return d.value;
+            })
+            .x(d3.scale.ordinal().domain([0, equipArray.length - 1]))
+            .xUnits(dc.units.ordinal)
+            .transitionDuration(700);
+    }
+
+    /*
+
+    function that writes which days are selected
+
+    */
+    function writeDaysSelected(ndx) {
+      var daysOfWeek = ndx.dimension(function(d) {
+        return d.day;
+      });
+
+      var daysGroup = daysOfWeek.group().reduceSum(function(d) {
+        return d.day + 1;
+      });
+
+      rowChart = dc.rowChart("#hiddenRowChart");
+
+      rowChart.width(800 * 0.75)
+            .height(350 * 0.75)
+            .margins({top: 10, right: 50, bottom: 30, left: 40})
+            .dimension(daysOfWeek)
+            .group(daysGroup)
+            .valueAccessor(function (d) {
+              if (d.key == 0) {
+                textForWriting = "";
+              }
+
+              if (d.value != 0) {
+                textForWriting += moment().day(d.key).format("dddd") + ", ";
+              }
+
+              if (d.key == 6) {
+                if (textForWriting.length == 64) {
+                  selectedDaysText = "Everyday"
+                } else {
+                  selectedDaysText = textForWriting.substring(0, textForWriting.length - 2);
+                }
+                document.getElementById("dayNav").innerHTML = selectedDaysText;
+              }
+              return d.value;
+            })
+            .elasticX(true)
+            .gap(1)
+            .x(d3.scale.linear().domain([-1, 8]))
+            .transitionDuration(700);
+    }
+
+    /*
+
+    function that writes which type of hours are selected
+
+    */
+    function writeTypeOfHoursSelected(ndx) {
+      var occupied = ndx.dimension(function(d) {
+        return d.occupancy;
+      });
+
+      var occupiedGroup = occupied.group().reduceSum(function(d) {
+        return d.occupancy + 1;
+      });
+
+      //Array for axis and label text
+      var occupancyArray = []
+      occupancyArray[0] = "Off hours";
+      occupancyArray[1] = "Semi-working hours";
+      occupancyArray[2] = "Working hours";
+
+      //Pie Chart - types of hours calculations
+      pieChart = dc.pieChart("#hiddenPieChart");
+      
+      pieChart.width(800 * 0.75)
           .height(350 * 0.75)
-          .margins({top: 10, right: 50, bottom: 30, left: 40})
-          .dimension(daysOfWeek1)
-          .group(DOW1)
+          .dimension(occupied)
+          .group(occupiedGroup)
           .valueAccessor(function (d) {
             if (d.key == 0) {
               textForWriting = "";
             }
 
             if (d.value != 0) {
-              textForWriting += moment().day(d.key).format("dddd") + ", ";
+              textForWriting += occupancyArray[d.key * 2] + ", ";
             }
 
-            if (d.key == 6) {
-              if (textForWriting.length == 64) {
-                selectedDaysText = "Everyday"
+            if (d.key == 1) {
+              if(textForWriting.split(",").length == occupancyArray.length + 1) {
+                selectedTHoursText = "All types of hours"
               } else {
-                selectedDaysText = textForWriting.substring(0, textForWriting.length - 2);
+                selectedTHoursText = textForWriting.substring(0, textForWriting.length - 2);
               }
-              document.getElementById("dayNav").innerHTML = selectedDaysText;
+              
+              document.getElementById("hourTypeNav").innerHTML = selectedTHoursText;
             }
             return d.value;
           })
-          .elasticX(true)
-          .gap(1)
-          .x(d3.scale.linear().domain([-1, 8]))
           .transitionDuration(700);
+    }
 
     dc.renderAll();
 
