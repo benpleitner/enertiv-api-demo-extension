@@ -57,4 +57,4 @@ Or run the full service with your Enertiv credentials (Requires Enertiv API Regi
 
 ## Viewing the project
 
-Once the server is up and running simply go to `http://localhost:11999` in your browser.
+Once the server is up and running, go to `http://localhost:11999` in your browser.
