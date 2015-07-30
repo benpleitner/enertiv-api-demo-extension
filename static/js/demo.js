@@ -9,26 +9,25 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 console.log("Start at the client level metadata");
-d3.json("/client", function (clients) {    // Make an AJAX request to pull the list of available clients
+d3.json("/client", function (clients) {    //Make an AJAX request to pull the list of available clients
 	console.log("Location Metadata")
-	console.log(clients);   								 // location data
-	var client_data = clients[0];					// default client
+	console.log(clients);   								 //Location data
+	var client_data = clients[0];					//Default client
 
 	client_data_obj = parseClients(clients);
-	// console.log(client_obj);
 	postLocation(client_data);
 })
 
 console.log("Carry that information to access the location level metadata");
 function postLocation(client_data){
-	var client_uuid = client_data.uuid;			// capture the client uuid
+	var client_uuid = client_data.uuid;			//Capture the client uuid
 		client_name = client_data["name"];
 
-	d3.selectAll("#clientName").text(client_name)  // Set the client name dynamically
+	d3.selectAll("#clientName").text(client_name)  //Set the client name dynamically
 
-	d3.json("/client/location?uuid=" + client_uuid , function (location_data) {  // Make an AJAX request to capture the metadata based off the location uuid
+	d3.json("/client/location?uuid=" + client_uuid , function (location_data) {  //Make an AJAX request to capture the metadata based off the location uuid
 		console.log("Location Information")  
-		console.log(location_data);												// location information
+		console.log(location_data);												//Location information
 		location_data_obj = parseLocation(location_data);
 		generateSun(location_data[0]);
 	});
@@ -45,11 +44,8 @@ function generateSun(location_data) {
 	setGlobalLocationU(location_uuid);
 	setGLName(location_name);
 	setGOUri(occupancy_uri);
-			// ,
-			// agg_uri = "/location/data?location_uuid=" + location_uuid + "&q_string=fromTime%3D" + fromTime +"%26toTime%3D" + toTime +"%26interval%3D" + interval +"%26aggregate%3dtrue%26data_format%3Drickshaw"
-			;
-	// console.log(deagg_uri);
-	d3.selectAll("#locationName").text(location_name)  // Set the location name dynamically
+
+	d3.selectAll("#locationName").text(location_name)  //Set the location name dynamically
 	crossfilterMagic.generateFromOccupancyURI(occupancy_uri);
 	crossfilterMagic.generateFromURI(deagg_uri, client_name, location_name);
 }
@@ -59,7 +55,8 @@ var today = moment(),
 	fromTime = moment(weekAgo).format('YYYY-MM-DD 04:00:00') + "Z",
 	toTime = moment(today).format('YYYY-MM-DD 04:00:00') + "Z",
 	interval = "hour",
-	// declare in the global scope to follow it around
+
+	//Declare in the global scope to follow it around
 	client_name = "",
 	client_data_obj = {},
 	location_data_obj = {};
